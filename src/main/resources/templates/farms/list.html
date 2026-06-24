@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Farms - Farm Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        #farmMap {
+            height: 420px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+        }
+        .farm-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .farm-card-hover {
+            transition: all 0.25s;
+            cursor: pointer;
+        }
+        .farm-card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(76,175,125,0.2);
+            border-color: var(--primary) !important;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">
+            <i class="fas fa-map me-2 text-success"></i>My Farms
+        </div>
+        <div class="topbar-right">
+            <a th:href="@{/farms/add}" class="btn-farm">
+                <i class="fas fa-plus"></i> Add Farm
+            </a>
+        </div>
+    </div>
+
+    <div class="page-content">
+
+        <!-- Alerts -->
+        <div th:if="${successMessage}" class="alert-farm-success mb-4">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert-farm-error mb-4">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <!-- Stats -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-label">Total Farms</div>
+                            <div class="stat-value mt-1"
+                                 th:text="${totalFarms}">0</div>
+                        </div>
+                        <div class="stat-icon green">
+                            <i class="fas fa-map"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map -->
+        <div class="farm-card mb-4" th:if="${!#lists.isEmpty(farms)}">
+            <div class="farm-card-header">
+                <h5>
+                    <i class="fas fa-map-location-dot me-2 text-success"></i>
+                    All Farm Locations
+                </h5>
+            </div>
+            <div class="p-3">
+                <div id="farmMap"></div>
+            </div>
+        </div>
+
+        <!-- Farm Cards Grid -->
+        <div class="row g-4" th:if="${!#lists.isEmpty(farms)}">
+            <div class="col-md-4" th:each="farm : ${farms}">
+                <a th:href="@{/farms/{id}(id=${farm.id})}"
+                   class="farm-card-link">
+                    <div class="farm-card p-4 farm-card-hover">
+                        <div class="d-flex justify-content-between
+                                    align-items-start mb-3">
+                            <div>
+                                <div style="width:48px;height:48px;
+                                     background:var(--primary-light);
+                                     border-radius:12px;display:flex;
+                                     align-items:center;
+                                     justify-content:center;
+                                     color:var(--primary);font-size:22px;
+                                     margin-bottom:10px;">
+                                    <i class="fas fa-seedling"></i>
+                                </div>
+                                <h6 class="fw-bold mb-1"
+                                    th:text="${farm.farmName}">-</h6>
+                                <div class="text-muted"
+                                     style="font-size:13px;">
+                                    <i class="fas fa-location-dot me-1"></i>
+                                    <span th:text="${farm.location}">-</span>
+                                </div>
+                            </div>
+                            <span class="badge bg-success">
+                                <i class="fas fa-arrow-right"></i>
+                            </span>
+                        </div>
+
+                        <div th:if="${farm.sizeAcres != null}"
+                             style="font-size:13px;color:var(--text-muted);">
+                            <i class="fas fa-ruler-combined me-1"></i>
+                            Size: <span th:text="${farm.sizeAcres}">0</span> acres
+                        </div>
+                        <div th:if="${farm.description != null}"
+                             class="mt-2"
+                             style="font-size:13px;color:var(--text-muted);"
+                             th:text="${farm.description}">-</div>
+                        <div class="mt-3"
+                             style="font-size:12px;color:var(--text-muted);">
+                            <i class="fas fa-calendar me-1"></i>
+                            Added: <span th:text="${#temporals.format(
+                                farm.createdAt,'dd MMM yyyy')}">-</span>
+                        </div>
+
+                        <div class="mt-3 pt-3"
+                             style="border-top:1px solid var(--border);
+                                    font-size:13px;color:var(--primary);
+                                    font-weight:600;">
+                            <i class="fas fa-eye me-1"></i>
+                            View Farm Details →
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(farms)}"
+             class="farm-card p-5 text-center">
+            <i class="fas fa-map fa-3x mb-3 text-success opacity-50"></i>
+            <h5 class="text-muted">No farms added yet</h5>
+            <p class="text-muted">Add your first farm to start
+                managing crops by location.</p>
+            <a th:href="@{/farms/add}" class="btn-farm">
+                <i class="fas fa-plus"></i> Add Your First Farm
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script th:inline="javascript">
+    const farms = /*[[${farms}]]*/ [];
+
+    const tanzaniaRegions = {
+        'Dodoma': [-6.1730, 35.7395],
+        'Dar es Salaam': [-6.7924, 39.2083],
+        'Arusha': [-3.3869, 36.6830],
+        'Kilimanjaro': [-3.0674, 37.3556],
+        'Kilimanjaro - Moshi': [-3.3333, 37.3333],
+        'Mwanza': [-2.5164, 32.9175],
+        'Tanga': [-5.0693, 39.0993],
+        'Tanga - Muheza': [-5.1667, 38.7833],
+        'Tanga - Korogwe': [-5.1500, 38.4833],
+        'Morogoro': [-6.8242, 37.6611],
+        'Iringa': [-7.7701, 35.6925],
+        'Mbeya': [-8.9000, 33.4500],
+        'Mtwara': [-10.2667, 40.1833],
+        'Mtwara - Masasi': [-10.7167, 38.8000],
+        'Mtwara - Newala': [-10.9333, 39.2833],
+        'Lindi': [-9.9833, 39.7167],
+        'Lindi - Kilwa': [-8.9167, 39.5000],
+        'Tabora': [-5.0167, 32.8000],
+        'Kigoma': [-4.8833, 29.6333],
+        'Kagera': [-1.4000, 31.3500],
+        'Kagera - Bukoba': [-1.3333, 31.8167],
+        'Singida': [-4.8167, 34.7500],
+        'Shinyanga': [-3.6600, 33.4200],
+        'Shinyanga - Kahama': [-3.8333, 32.6000],
+        'Mara': [-1.7500, 34.0000],
+        'Mara - Musoma': [-1.5000, 33.8000],
+        'Manyara': [-3.7000, 35.8000],
+        'Manyara - Babati': [-4.2167, 35.7500],
+        'Geita': [-2.8667, 32.1667],
+        'Njombe': [-9.3333, 34.7667],
+        'Songea': [-10.6833, 35.6500],
+        'Ruvuma - Songea': [-10.6833, 35.6500],
+        'Pwani': [-7.0000, 39.0000],
+        'Pwani - Bagamoyo': [-6.4333, 38.9000],
+        'Pwani - Kibaha': [-6.7667, 38.9167],
+        'Morogoro - Kilosa': [-6.8333, 36.9833],
+        'Tabora - Igunga': [-4.2833, 33.7167],
+        'Tabora - Nzega': [-4.2167, 33.1833],
+        'Kigoma - Kasulu': [-4.5833, 30.1000],
+        'Katavi - Mpanda': [-6.3500, 31.0667],
+        'Rukwa - Sumbawanga': [-7.9667, 31.6167],
+        'Simiyu - Bariadi': [-2.8000, 33.9833],
+        'Zanzibar - Unguja Kaskazini': [-5.7333, 39.3000],
+        'Zanzibar - Unguja Kusini': [-6.2500, 39.4000],
+        'Zanzibar - Mjini Magharibi': [-6.1659, 39.2026],
+        'Zanzibar - Pemba Kaskazini': [-4.9833, 39.7500],
+        'Zanzibar - Pemba Kusini': [-5.3333, 39.7167],
+        'Dar es Salaam - Kinondoni': [-6.7667, 39.2333],
+        'Dar es Salaam - Ilala': [-6.8167, 39.2833],
+        'Dar es Salaam - Temeke': [-6.8833, 39.2500],
+        'Dar es Salaam - Ubungo': [-6.7833, 39.2167],
+    };
+
+    if (document.getElementById('farmMap')) {
+        const map = L.map('farmMap').setView([-6.3690, 34.8888], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org">OpenStreetMap</a>',
+            maxZoom: 18,
+        }).addTo(map);
+
+        const farmIcon = L.divIcon({
+            html: '<div style="background:#4caf50;width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>',
+            iconSize: [32, 32], iconAnchor: [16, 32],
+            popupAnchor: [0, -35], className: ''
+        });
+
+        let bounds = [];
+        farms.forEach(farm => {
+            let coords = null;
+            if (farm.latitude && farm.longitude) {
+                coords = [farm.latitude, farm.longitude];
+            } else if (tanzaniaRegions[farm.location]) {
+                coords = tanzaniaRegions[farm.location];
+            }
+
+            if (coords) {
+                const marker = L.marker(coords, { icon: farmIcon }).addTo(map);
+                marker.bindPopup(`
+                    <div style="font-family:'Segoe UI',sans-serif;
+                                min-width:180px;padding:4px;">
+                        <div style="font-size:15px;font-weight:700;
+                                    color:#1A5C2A;margin-bottom:4px;">
+                            🌱 ${farm.farmName}
+                        </div>
+                        <div style="font-size:13px;color:#555;
+                                    margin-bottom:6px;">
+                            📍 ${farm.location}
+                        </div>
+                        ${farm.sizeAcres ? `<div style="font-size:12px;
+                            color:#888;">📐 ${farm.sizeAcres} acres</div>` : ''}
+                        <a href="/farms/${farm.id}"
+                           style="display:block;margin-top:8px;
+                                  background:#1A5C2A;color:white;
+                                  padding:5px 12px;border-radius:6px;
+                                  text-decoration:none;font-size:12px;
+                                  text-align:center;">
+                            View Details →
+                        </a>
+                    </div>
+                `);
+                bounds.push(coords);
+            }
+        });
+
+        if (bounds.length > 0) {
+            map.fitBounds(bounds, { padding: [50, 50] });
+        }
+    }
+</script>
+</body>
+</html>

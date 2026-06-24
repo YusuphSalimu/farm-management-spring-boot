@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Expense - Farm Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">
+            <i class="fas fa-receipt me-2 text-danger"></i>
+            Add New Expense
+        </div>
+        <div class="topbar-right">
+            <a th:href="@{/finance}" class="btn-farm-outline">
+                <i class="fas fa-arrow-left"></i> Back to Finances
+            </a>
+        </div>
+    </div>
+
+    <div class="page-content">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="farm-card">
+                    <div class="farm-card-header">
+                        <h5>
+                            <i class="fas fa-receipt me-2 text-danger"></i>
+                            Expense Details
+                        </h5>
+                    </div>
+                    <div class="p-4">
+                        <form th:action="@{/finance/expenses/add}"
+                              method="post" class="farm-form">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label>Expense Name *</label>
+                                    <input type="text" name="expenseName"
+                                           class="form-control"
+                                           placeholder="e.g. Kununua Mbolea DAP"
+                                           required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Category *</label>
+                                    <select name="category"
+                                            class="form-select" required>
+                                        <option value="">Select Category</option>
+                                        <option value="Seeds">Seeds</option>
+                                        <option value="Fertilizer">Fertilizer</option>
+                                        <option value="Pesticide">Pesticide</option>
+                                        <option value="Labor">Labor</option>
+                                        <option value="Transport">Transport</option>
+                                        <option value="Farming Equipment">Farming Equipment</option>
+                                        <option value="Irrigation">Irrigation</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Amount (TZS) *</label>
+                                    <input type="number" name="amount"
+                                           class="form-control"
+                                           placeholder="e.g. 50000"
+                                           step="0.01" min="0" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Date of Expense *</label>
+                                    <input type="date" name="expenseDate"
+                                           id="expenseDate"
+                                           class="form-control" required>
+                                </div>
+                                <div class="col-12">
+                                    <label>Description</label>
+                                    <textarea name="description"
+                                              class="form-control" rows="3"
+                                              placeholder="Additional details..."></textarea>
+                                </div>
+                                <div class="col-12 d-flex gap-3 mt-2">
+                                    <button type="submit" class="btn-farm">
+                                        <i class="fas fa-save"></i> Save Expense
+                                    </button>
+                                    <a th:href="@{/finance}" class="btn-farm-outline">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('expenseDate').max = today;
+    });
+</script>
+</body>
+</html>

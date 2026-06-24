@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance & Sales - Farm Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        .profit-positive { color: #2e7d32; font-weight: 700; }
+        .profit-negative { color: #c62828; font-weight: 700; }
+        .tzs { font-size: 12px; color: var(--text-muted); }
+        .amount-large {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 24px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        .tab-content-panel { display: none; }
+        .tab-content-panel.active { display: block; }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">
+            <i class="fas fa-coins me-2 text-warning"></i>
+            Finance & Sales
+        </div>
+        <div class="topbar-right d-flex gap-2">
+            <a th:href="@{/finance/market-prices}" class="btn-farm-outline">
+                <i class="fas fa-chart-line"></i> Market Prices
+            </a>
+            <a th:href="@{/finance/expenses/add}" class="btn-farm-outline">
+                <i class="fas fa-minus-circle"></i> Add Expenses
+            </a>
+            <a th:href="@{/finance/sales/add}" class="btn-farm">
+                <i class="fas fa-plus"></i> Record Sales
+            </a>
+        </div>
+    </div>
+
+    <div class="page-content">
+
+        <!-- Alerts -->
+        <div th:if="${successMessage}" class="alert-farm-success mb-4">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert-farm-error mb-4">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <!-- Finance Summary Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-label">Total of all Revenue</div>
+                            <div class="amount-large text-success mt-2">
+                                <span class="tzs">TZS </span>
+                                <span th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')}">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-icon green">
+                            <i class="fas fa-arrow-trend-up"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2" style="font-size:12px;color:var(--text-muted);">
+                        Total of all Sales
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-label">Total of all Expenses</div>
+                            <div class="amount-large text-danger mt-2">
+                                <span class="tzs">TZS </span>
+                                <span th:text="${#numbers.formatDecimal(totalExpenses, 0, 'COMMA', 0, 'POINT')}">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-icon orange">
+                            <i class="fas fa-arrow-trend-down"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2" style="font-size:12px;color:var(--text-muted);">
+                        Total of all Expenses
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-label">Net Profit</div>
+                            <div class="mt-2"
+                                 th:class="${netProfit >= 0} ? 'amount-large profit-positive' : 'amount-large profit-negative'">
+                                <span class="tzs">TZS </span>
+                                <span th:text="${#numbers.formatDecimal(netProfit, 0, 'COMMA', 0, 'POINT')}">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-icon"
+                             th:style="${netProfit >= 0} ?
+                                'background:#e8f5e9;color:#2e7d32;width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;' :
+                                'background:#fce4ec;color:#c62828;width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;'">
+                            <i th:class="${netProfit >= 0} ? 'fas fa-chart-line' : 'fas fa-chart-line-down'"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2" style="font-size:12px;"
+                         th:class="${netProfit >= 0} ? 'text-success' : 'text-danger'"
+                         th:text="${netProfit >= 0} ? 'You are in profit ✓' : 'You are in a loss ✗'">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="farm-card">
+            <div style="border-bottom: 1px solid var(--border); padding: 0 24px;">
+                <button class="tab-btn active" onclick="showTab('sales')">
+                    <i class="fas fa-hand-holding-dollar me-2"></i>
+                    Sales (<span th:text="${#lists.size(sales)}">0</span>)
+                </button>
+                <button class="tab-btn" onclick="showTab('expenses')">
+                    <i class="fas fa-receipt me-2"></i>
+                    Expenses (<span th:text="${#lists.size(expenses)}">0</span>)
+                </button>
+            </div>
+
+            <!-- Sales Tab -->
+            <div id="tab-sales" class="tab-content-panel active">
+                <div class="table-responsive">
+                    <table class="farm-table">
+                        <thead>
+                        <tr>
+                            <th>Crop</th>
+                            <th>Amount Sold</th>
+                            <th>Price/Unit (TZS)</th>
+                            <th>Total (TZS)</th>
+                            <th>Buyer</th>
+                            <th>Market</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(sales)}">
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <i class="fas fa-coins fa-3x mb-3 d-block text-warning opacity-50"></i>
+                                No sales records yet.
+                                <a th:href="@{/finance/sales/add}" class="text-success fw-bold">
+                                    Add the first sale
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:each="sale : ${sales}">
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <img th:src="${cropImageMap[sale.crop.cropName]}"
+                                         style="width:36px;height:36px;border-radius:50%;object-fit:cover;"
+                                         th:alt="${sale.crop.cropName}"
+                                         onerror="this.style.display='none'">
+                                    <span class="fw-semibold" th:text="${sale.crop.cropName}">-</span>
+                                </div>
+                            </td>
+                            <td th:text="${sale.quantitySold + ' ' + sale.unit}">-</td>
+                            <td th:text="${#numbers.formatDecimal(sale.pricePerUnit, 0, 'COMMA', 0, 'POINT')}">-</td>
+                            <td class="fw-bold text-success"
+                                th:text="'TZS ' + ${#numbers.formatDecimal(sale.totalAmount, 0, 'COMMA', 0, 'POINT')}">-</td>
+                            <td th:text="${sale.buyerName != null ? sale.buyerName : '-'}">-</td>
+                            <td th:text="${sale.marketLocation != null ? sale.marketLocation : '-'}">-</td>
+                            <td th:text="${sale.saleDate}">-</td>
+                            <td>
+                                <form th:action="@{/finance/sales/delete/{id}(id=${sale.id})}"
+                                      method="post" class="d-inline">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Delete this sales record?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Expenses Tab -->
+            <div id="tab-expenses" class="tab-content-panel">
+                <div class="table-responsive">
+                    <table class="farm-table">
+                        <thead>
+                        <tr>
+                            <th>Expense Name</th>
+                            <th>Category</th>
+                            <th>Kiasi (TZS)</th>
+                            <th>Date</th>
+                            <th>Details</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(expenses)}">
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="fas fa-receipt fa-3x mb-3 d-block text-danger opacity-50"></i>
+                                No expenses recorded yet.
+                                <a th:href="@{/finance/expenses/add}" class="text-success fw-bold">
+                                    Add the first expense
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:each="expense : ${expenses}">
+                            <td class="fw-semibold" th:text="${expense.expenseName}">-</td>
+                            <td>
+                                    <span style="background:#fce4ec;color:#c62828;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;"
+                                          th:text="${expense.category}">-</span>
+                            </td>
+                            <td class="fw-bold text-danger"
+                                th:text="'TZS ' + ${#numbers.formatDecimal(expense.amount, 0, 'COMMA', 0, 'POINT')}">-</td>
+                            <td th:text="${expense.expenseDate}">-</td>
+                            <td th:text="${expense.description != null ? expense.description : '-'}">-</td>
+                            <td>
+                                <form th:action="@{/finance/expenses/delete/{id}(id=${expense.id})}"
+                                      method="post" class="d-inline">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Delete this expense?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function showTab(tab) {
+        document.querySelectorAll('.tab-content-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + tab).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+</script>
+</body>
+</html>

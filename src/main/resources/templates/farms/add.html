@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Farm - Farm Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <style>
+        #miniMap { height: 250px; border-radius: 12px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">
+            <i class="fas fa-plus me-2 text-success"></i>Add New Farm
+        </div>
+        <div class="topbar-right">
+            <a th:href="@{/farms}" class="btn-farm-outline">
+                <i class="fas fa-arrow-left"></i> Back to Farms
+            </a>
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="farm-card">
+                    <div class="farm-card-header">
+                        <h5><i class="fas fa-map me-2 text-success"></i>Farm Details</h5>
+                    </div>
+                    <div class="p-4">
+                        <form th:action="@{/farms/add}" method="post" class="farm-form">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label>Farm Name *</label>
+                                    <input type="text" name="farmName"
+                                           class="form-control"
+                                           placeholder="e.g. Shamba la Dodoma"
+                                           required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Location (Area) *</label>
+                                    <select name="location" class="form-select" required>
+                                        <option value="">Select Region/Town</option>
+                                        <optgroup label="Central Zone">
+                                            <option value="Dodoma">Dodoma</option>
+                                            <option value="Singida">Singida</option>
+                                        </optgroup>
+                                        <optgroup label="Northern Zone">
+                                            <option value="Arusha">Arusha</option>
+                                            <option value="Kilimanjaro - Moshi">Kilimanjaro - Moshi</option>
+                                            <option value="Tanga">Tanga</option>
+                                        </optgroup>
+                                        <optgroup label="Eastern Zone">
+                                            <option value="Dar es Salaam">Dar es Salaam</option>
+                                            <option value="Morogoro">Morogoro</option>
+                                            <option value="Pwani">Pwani</option>
+                                        </optgroup>
+                                        <optgroup label="Southern Zone">
+                                            <option value="Mtwara">Mtwara</option>
+                                            <option value="Lindi">Lindi</option>
+                                            <option value="Ruvuma - Songea">Ruvuma - Songea</option>
+                                        </optgroup>
+                                        <optgroup label="South West Zone">
+                                            <option value="Iringa">Iringa</option>
+                                            <option value="Mbeya">Mbeya</option>
+                                            <option value="Njombe">Njombe</option>
+                                        </optgroup>
+                                        <optgroup label="Western Zone">
+                                            <option value="Tabora">Tabora</option>
+                                            <option value="Kigoma">Kigoma</option>
+                                        </optgroup>
+                                        <optgroup label="Lake Zone">
+                                            <option value="Mwanza">Mwanza</option>
+                                            <option value="Kagera">Kagera</option>
+                                            <option value="Shinyanga">Shinyanga</option>
+                                        </optgroup>
+                                        <optgroup label="Zanzibar">
+                                            <option value="Zanzibar - Unguja">Zanzibar - Unguja</option>
+                                            <option value="Zanzibar - Pemba">Zanzibar - Pemba</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+
+                                <!-- After Location Select Field -->
+                                <div class="col-12">
+                                    <label>Pinpoint Farm on Map (Optional)</label>
+                                    <input type="text" id="searchAddress"
+                                           class="form-control mb-2"
+                                           placeholder="Type exact location e.g. Bahi Road, Dodoma">
+                                    <button type="button" class="btn-farm-outline mb-2"
+                                            onclick="searchLocation()">
+                                        <i class="fas fa-search-location"></i> Find on Map
+                                    </button>
+                                    <div id="miniMap"></div>
+                                    <input type="hidden" name="latitude" id="latInput">
+                                    <input type="hidden" name="longitude" id="lngInput">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Size (Acres)</label>
+                                    <input type="number" name="sizeAcres"
+                                           class="form-control"
+                                           placeholder="e.g. 5.5"
+                                           step="0.01" min="0">
+                                </div>
+                                <div class="col-12">
+                                    <label>Description</label>
+                                    <textarea name="description"
+                                              class="form-control" rows="3"
+                                              placeholder="Additional details about the farm..."></textarea>
+                                </div>
+                                <div class="col-12 d-flex gap-3">
+                                    <button type="submit" class="btn-farm">
+                                        <i class="fas fa-save"></i> Save Farm
+                                    </button>
+                                    <a th:href="@{/farms}" class="btn-farm-outline">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let miniMap = L.map('miniMap').setView([-6.3690, 34.8888], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(miniMap);
+
+    let marker = null;
+
+    function searchLocation() {
+        const query = document.getElementById('searchAddress').value + ', Tanzania';
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=tz`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
+                    miniMap.setView([lat, lon], 13);
+                    if (marker) miniMap.removeLayer(marker);
+                    marker = L.marker([lat, lon]).addTo(miniMap)
+                        .bindPopup('Your farm location').openPopup();
+                    document.getElementById('latInput').value = lat;
+                    document.getElementById('lngInput').value = lon;
+                } else {
+                    alert('Location not found. Try a more specific address.');
+                }
+            });
+    }
+
+    // Allow clicking on map to set location
+    miniMap.on('click', function(e) {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+        if (marker) miniMap.removeLayer(marker);
+        marker = L.marker([lat, lng]).addTo(miniMap)
+            .bindPopup('Farm pinned here').openPopup();
+        document.getElementById('latInput').value = lat;
+        document.getElementById('lngInput').value = lng;
+    });
+</script>
+</body>
+</html>
+

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Prices - Farm Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        .price-high { color: #2e7d32; font-weight: 700; }
+        .price-med { color: #f57c00; font-weight: 700; }
+        .price-low { color: #1565c0; font-weight: 700; }
+        .market-note {
+            background: var(--primary-light);
+            border-left: 4px solid var(--primary);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">
+            <i class="fas fa-chart-line me-2 text-success"></i>
+            Market Prices Tanzania
+        </div>
+        <div class="topbar-right">
+            <a th:href="@{/finance}" class="btn-farm-outline">
+                <i class="fas fa-arrow-left"></i> Back to Finances
+            </a>
+        </div>
+    </div>
+
+    <div class="page-content">
+
+        <div class="market-note mb-4">
+            <i class="fas fa-info-circle me-2"></i>
+            These prices are averages from Tanzanian markets for the month of June 2026.
+            Prices may vary depending on the location and season.
+            Source: Ministry of Agriculture Tanzania.
+        </div>
+
+        <div class="farm-card">
+            <div class="farm-card-header">
+                <h5>
+                    <i class="fas fa-chart-bar me-2 text-success"></i>
+                    Crop Prices — Juni 2026
+                </h5>
+            </div>
+            <div class="table-responsive">
+                <table class="farm-table">
+                    <thead>
+                    <tr>
+                        <th>Crop</th>
+                        <th>Unit</th>
+                        <th>Low Price (TZS)</th>
+                        <th>Medium Price (TZS)</th>
+                        <th>High Price (TZS)</th>
+                        <th>Preferred Markets</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${cropImageMap['Mahindi']}"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                <span class="fw-semibold">Mahindi</span>
+                            </div>
+                        </td>
+                        <td>kg</td>
+                        <td class="price-low">600</td>
+                        <td class="price-med">800</td>
+                        <td class="price-high">1,200</td>
+                        <td>Dodoma, Morogoro, Iringa</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${cropImageMap['Mchele']}"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                <span class="fw-semibold">Mchele</span>
+                            </div>
+                        </td>
+                        <td>kg</td>
+                        <td class="price-low">1,500</td>
+                        <td class="price-med">2,000</td>
+                        <td class="price-high">2,800</td>
+                        <td>Morogoro, Mbeya, Shinyanga</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${cropImageMap['Maharage']}"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                <span class="fw-semibold">Maharage</span>
+                            </div>
+                        </td>
+                        <td>kg</td>
+                        <td class="price-low">1,800</td>
+                        <td class="price-med">2,500</td>
+                        <td class="price-high">3,500</td>
+                        <td>Arusha, Kilimanjaro, Mbeya</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${cropImageMap['Karanga']}"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                <span class="fw-semibold">Karanga</span>
+                            </div>
+                        </td>
+                        <td>kg</td>
+                        <td class="price-low">2,000</td>
+                        <td class="price-med">3,000</td>
+                        <td class="price-high">4,000</td>
+                        <td>Dodoma, Singida, Tabora</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${cropImageMap['Mtama']}"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                <span class="fw-semibold">Mtama</span>
+                            </div>
+                        </td>
+                        <td>kg</td>
+                        <td class="price-low">500</td>
+                        <td class="price-med">800</td>
+                        <td class="price-high">1,200</td>
+                        <td>Dodoma, Singida, Shinyanga</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${cropImageMap['Nyanya']}"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                <span class="fw-semibold">Nyanya</span>
+                            </div>
+                        </td>
+                        <td>kg</td>
+                        <td class="price-low">300</td>
+                        <td class="price-med">600</td>
+                        <td class="price-high">1,000</td>
+                        <td>Iringa, Arusha, Dar es Salaam</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${cropImageMap['Vitunguu']}"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                <span class="fw-semibold">Vitunguu</span>
+                            </div>
+                        </td>
+                        <td>kg</td>
+                        <td class="price-low">500</td>
+                        <td class="price-med">900</td>
+                        <td class="price-high">1,500</td>
+                        <td>Dodoma, Dar es Salaam</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${cropImageMap['Muhogo']}"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                <span class="fw-semibold">Mihogo</span>
+                            </div>
+                        </td>
+                        <td>kg</td>
+                        <td class="price-low">200</td>
+                        <td class="price-med">400</td>
+                        <td class="price-high">700</td>
+                        <td>Pwani, Dar es Salaam, Mwanza</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${cropImageMap['Korosho']}"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                <span class="fw-semibold">Korosho</span>
+                            </div>
+                        </td>
+                        <td>kg</td>
+                        <td class="price-low">3,000</td>
+                        <td class="price-med">4,500</td>
+                        <td class="price-high">6,000</td>
+                        <td>Mtwara, Lindi, Dar es Salaam</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${cropImageMap['Kahawa']}"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                <span class="fw-semibold">Kahawa</span>
+                            </div>
+                        </td>
+                        <td>kg</td>
+                        <td class="price-low">5,000</td>
+                        <td class="price-med">8,000</td>
+                        <td class="price-high">12,000</td>
+                        <td>Kilimanjaro, Arusha, Kagera</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${cropImageMap['Karafuu']}"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                <span class="fw-semibold">Karafuu</span>
+                            </div>
+                        </td>
+                        <td>kg</td>
+                        <td class="price-low">8,000</td>
+                        <td class="price-med">12,000</td>
+                        <td class="price-high">18,000</td>
+                        <td>Zanzibar, Pemba</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${cropImageMap['Chai']}"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                <span class="fw-semibold">Chai</span>
+                            </div>
+                        </td>
+                        <td>kg</td>
+                        <td class="price-low">1,500</td>
+                        <td class="price-med">2,500</td>
+                        <td class="price-high">4,000</td>
+                        <td>Tanga, Iringa, Mbeya</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${cropImageMap['Ndizi']}"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                <span class="fw-semibold">Ndizi</span>
+                            </div>
+                        </td>
+                        <td>kg</td>
+                        <td class="price-low">500</td>
+                        <td class="price-med">800</td>
+                        <td class="price-high">1,500</td>
+                        <td>Kilimanjaro, Kagera, Dar es Salaam</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${cropImageMap['Alizeti']}"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                <span class="fw-semibold">Alizeti</span>
+                            </div>
+                        </td>
+                        <td>kg</td>
+                        <td class="price-low">800</td>
+                        <td class="price-med">1,200</td>
+                        <td class="price-high">1,800</td>
+                        <td>Dodoma, Singida, Tabora</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${cropImageMap['Zabibu']}"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                <span class="fw-semibold">Zabibu</span>
+                            </div>
+                        </td>
+                        <td>kg</td>
+                        <td class="price-low">2,000</td>
+                        <td class="price-med">3,500</td>
+                        <td class="price-high">5,000</td>
+                        <td>Dodoma, Dar es Salaam</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${cropImageMap['Embe']}"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                <span class="fw-semibold">Embe</span>
+                            </div>
+                        </td>
+                        <td>kg</td>
+                        <td class="price-low">500</td>
+                        <td class="price-med">1,000</td>
+                        <td class="price-high">2,000</td>
+                        <td>Pwani, Tanga, Dar es Salaam</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${cropImageMap['Pamba']}"
+                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                <span class="fw-semibold">Pamba</span>
+                            </div>
+                        </td>
+                        <td>kg</td>
+                        <td class="price-low">700</td>
+                        <td class="price-med">1,000</td>
+                        <td class="price-high">1,500</td>
+                        <td>Mwanza, Shinyanga, Tabora</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${farm.farmName} + ' - Farm Details'">Farm Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        #detailMap { height: 320px; border-radius: 12px; }
+        .info-badge {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">
+            <i class="fas fa-seedling me-2 text-success"></i>
+            <span th:text="${farm.farmName}">Farm</span>
+        </div>
+        <div class="topbar-right">
+            <a th:href="@{/farms}" class="btn-farm-outline">
+                <i class="fas fa-arrow-left"></i> Back to My Farms
+            </a>
+        </div>
+    </div>
+
+    <div class="page-content">
+
+        <!-- Farm Header -->
+        <div class="farm-card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h4 class="fw-bold mb-2" th:text="${farm.farmName}">-</h4>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <span class="info-badge">
+                            <i class="fas fa-location-dot"></i>
+                            <span th:text="${farm.location}">-</span>
+                        </span>
+                        <span class="info-badge" th:if="${farm.sizeAcres != null}">
+                            <i class="fas fa-ruler-combined"></i>
+                            <span th:text="${farm.sizeAcres} + ' acres'">-</span>
+                        </span>
+                        <span class="info-badge">
+                            <i class="fas fa-calendar"></i>
+                            Added: <span th:text="${#temporals.format(farm.createdAt,'dd MMM yyyy')}">-</span>
+                        </span>
+                    </div>
+                    <p th:if="${farm.description != null}"
+                       class="text-muted mt-2 mb-0"
+                       th:text="${farm.description}">-</p>
+                </div>
+                <form th:action="@{/farms/delete/{id}(id=${farm.id})}" method="post">
+                    <button type="submit" class="btn btn-outline-danger btn-sm"
+                            onclick="return confirm('Delete this farm?')">
+                        <i class="fas fa-trash"></i> Delete Farm
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Map -->
+        <div class="farm-card mb-4">
+            <div class="farm-card-header">
+                <h5><i class="fas fa-map-location-dot me-2 text-success"></i>Farm Location</h5>
+            </div>
+            <div class="p-3">
+                <div id="detailMap"></div>
+            </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-icon green mx-auto mb-2">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="stat-label">Crops</div>
+                    <div class="stat-value" th:text="${farmCropsCount}">0</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-icon orange mx-auto mb-2">
+                        <i class="fas fa-boxes"></i>
+                    </div>
+                    <div class="stat-label">Inventory Items</div>
+                    <div class="stat-value" th:text="${farmInventoryCount}">0</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-icon blue mx-auto mb-2">
+                        <i class="fas fa-wheat-awn"></i>
+                    </div>
+                    <div class="stat-label">Harvests</div>
+                    <div class="stat-value" th:text="${farmHarvestsCount}">0</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-icon green mx-auto mb-2">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="stat-label">Total Sales</div>
+                    <div class="stat-value" style="font-size:18px;"
+                         th:text="'TZS ' + ${#numbers.formatDecimal(farmSalesTotal, 0, 'COMMA', 0, 'POINT')}">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Crops Table -->
+        <div class="farm-card mb-4">
+            <div class="farm-card-header">
+                <h5><i class="fas fa-leaf me-2 text-success"></i>
+                    Crops on this Farm
+                    <span class="badge bg-success ms-2" th:text="${farmCropsCount}">0</span>
+                </h5>
+                <a th:href="@{/crops/add}" class="btn-farm btn-sm">
+                    <i class="fas fa-plus"></i> Add Crop
+                </a>
+            </div>
+            <div class="table-responsive">
+                <table class="farm-table">
+                    <thead>
+                    <tr>
+                        <th>Crop</th>
+                        <th>Type</th>
+                        <th>Planted</th>
+                        <th>Expected Harvest</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(farmCrops)}">
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            No crops added to this farm yet.
+                        </td>
+                    </tr>
+                    <tr th:each="crop : ${farmCrops}">
+                        <td class="fw-semibold" th:text="${crop.cropName}">-</td>
+                        <td th:text="${crop.cropType}">-</td>
+                        <td th:text="${crop.plantingDate}">-</td>
+                        <td th:text="${crop.expectedHarvestDate}">-</td>
+                        <td>
+                                <span th:class="${crop.status == 'GROWING'} ?
+                                    'badge-growing' :
+                                    (${crop.status == 'HARVESTED'} ?
+                                    'badge-harvested' : 'badge-failed')"
+                                      th:text="${crop.status}">-</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Inventory Table -->
+        <div class="farm-card">
+            <div class="farm-card-header">
+                <h5><i class="fas fa-boxes me-2 text-warning"></i>
+                    Inventory on this Farm
+                    <span class="badge bg-warning text-dark ms-2"
+                          th:text="${farmInventoryCount}">0</span>
+                </h5>
+                <a th:href="@{/inventory/add}" class="btn-farm btn-sm">
+                    <i class="fas fa-plus"></i> Add Item
+                </a>
+            </div>
+            <div class="table-responsive">
+                <table class="farm-table">
+                    <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Category</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(farmInventory)}">
+                        <td colspan="4" class="text-center py-4 text-muted">
+                            No inventory items for this farm yet.
+                        </td>
+                    </tr>
+                    <tr th:each="item : ${farmInventory}">
+                        <td class="fw-semibold" th:text="${item.itemName}">-</td>
+                        <td th:text="${item.category}">-</td>
+                        <td th:text="${item.quantity}">-</td>
+                        <td th:text="${item.unit}">-</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script th:inline="javascript">
+    const farmLat = /*[[${farm.latitude}]]*/ null;
+    const farmLng = /*[[${farm.longitude}]]*/ null;
+    const farmName = /*[[${farm.farmName}]]*/ 'Farm';
+    const farmLocation = /*[[${farm.location}]]*/ 'Tanzania';
+
+    const tanzaniaRegions = {
+        'Dodoma': [-6.1730, 35.7395],
+        'Dar es Salaam': [-6.7924, 39.2083],
+        'Arusha': [-3.3869, 36.6830],
+        'Mwanza': [-2.5164, 32.9175],
+        'Tanga': [-5.0693, 39.0993],
+        'Morogoro': [-6.8242, 37.6611],
+        'Iringa': [-7.7701, 35.6925],
+        'Mbeya': [-8.9000, 33.4500],
+        'Mtwara': [-10.2667, 40.1833],
+        'Mtwara - Masasi': [-10.7167, 38.8000],
+        'Lindi': [-9.9833, 39.7167],
+        'Tabora': [-5.0167, 32.8000],
+        'Kigoma': [-4.8833, 29.6333],
+        'Kagera': [-1.4000, 31.3500],
+        'Singida': [-4.8167, 34.7500],
+        'Shinyanga': [-3.6600, 33.4200],
+        'Mara': [-1.7500, 34.0000],
+        'Manyara': [-3.7000, 35.8000],
+        'Geita': [-2.8667, 32.1667],
+        'Njombe': [-9.3333, 34.7667],
+        'Songea': [-10.6833, 35.6500],
+        'Zanzibar - Mjini Magharibi': [-6.1659, 39.2026],
+    };
+
+    let coords = null;
+    if (farmLat && farmLng) {
+        coords = [farmLat, farmLng];
+    } else if (tanzaniaRegions[farmLocation]) {
+        coords = tanzaniaRegions[farmLocation];
+    } else {
+        coords = [-6.3690, 34.8888];
+    }
+
+    const map = L.map('detailMap').setView(coords, farmLat ? 13 : 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    const icon = L.divIcon({
+        html: '<div style="background:#4caf50;width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>',
+        iconSize: [32,32], iconAnchor: [16,32], popupAnchor: [0,-35], className: ''
+    });
+
+    L.marker(coords, { icon })
+        .addTo(map)
+        .bindPopup(`<b>🌱 ${farmName}</b><br>📍 ${farmLocation}`)
+        .openPopup();
+</script>
+</body>
+</html>

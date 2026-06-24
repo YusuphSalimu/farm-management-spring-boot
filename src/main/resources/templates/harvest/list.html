@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harvest Records - Farm Management System</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        .quality-excellent {
+            background: #e8f5e9; color: #2e7d32;
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 600;
+        }
+        .quality-good {
+            background: #e3f2fd; color: #1565c0;
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 600;
+        }
+        .quality-poor {
+            background: #fce4ec; color: #c62828;
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">
+            <i class="fas fa-wheat-awn me-2 text-primary"></i>
+            Harvest Records
+        </div>
+        <div class="topbar-right">
+            <a th:href="@{/harvest/add}" class="btn-farm">
+                <i class="fas fa-plus"></i> Add Harvest Record
+            </a>
+        </div>
+    </div>
+
+    <div class="page-content">
+
+        <!-- Alerts -->
+        <div th:if="${successMessage}" class="alert-farm-success mb-4">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert-farm-error mb-4">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-label">Total Harvests</div>
+                            <div class="stat-value mt-1"
+                                 th:text="${#lists.size(harvests)}">0</div>
+                        </div>
+                        <div class="stat-icon blue">
+                            <i class="fas fa-wheat-awn"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-label">Excellent Quality</div>
+                            <div class="stat-value mt-1 text-success"
+                                 th:text="${harvests.?[quality == 'EXCELLENT'].size()}">0</div>
+                        </div>
+                        <div class="stat-icon green">
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-label">Poor Quality</div>
+                            <div class="stat-value mt-1 text-danger"
+                                 th:text="${harvests.?[quality == 'POOR'].size()}">0</div>
+                        </div>
+                        <div class="stat-icon orange">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Harvest Table -->
+        <div class="farm-card">
+            <div class="farm-card-header">
+                <h5>
+                    <i class="fas fa-wheat-awn me-2 text-primary"></i>
+                    All Harvest Records
+                    <span class="badge bg-primary ms-2"
+                          th:text="${#lists.size(harvests)}">0</span>
+                </h5>
+            </div>
+            <div class="table-responsive">
+                <table class="farm-table">
+                    <thead>
+                    <tr>
+                        <th>Crop</th>
+                        <th>Harvest Date</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+                        <th>Quality</th>
+                        <th>Notes</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(harvests)}">
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fas fa-wheat-awn fa-3x mb-3 d-block text-primary opacity-50"></i>
+                            No harvest records yet.
+                            <a th:href="@{/harvest/add}"
+                               class="text-success fw-bold">
+                                Add your first harvest record
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:each="harvest : ${harvests}">
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${cropImageMap[harvest.crop.cropName] != null} ?
+            ${cropImageMap[harvest.crop.cropName]} :
+            'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=100&h=100&fit=crop'"
+                                     style="width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid #d4ead9;"
+                                     th:alt="${harvest.crop.cropName}">
+                                <span class="fw-semibold"
+                                      th:text="${harvest.crop.cropName}">-</span>
+                            </div>
+                        </td>
+                        <td th:text="${harvest.harvestDate}">-</td>
+                        <td th:text="${harvest.quantityHarvested}">-</td>
+                        <td th:text="${harvest.unit}">-</td>
+                        <td>
+                                <span th:class="${harvest.quality == 'EXCELLENT'} ?
+                                    'quality-excellent' :
+                                    (${harvest.quality == 'GOOD'} ?
+                                    'quality-good' : 'quality-poor')"
+                                      th:text="${harvest.quality}">-</span>
+                        </td>
+                        <td th:text="${harvest.notes != null ? harvest.notes : '-'}">-</td>
+                        <td>
+                            <form th:action="@{/harvest/delete/{id}(id=${harvest.id})}"
+                                  method="post" class="d-inline">
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Delete this harvest record?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

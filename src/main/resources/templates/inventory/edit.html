@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Inventory - Farm Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">
+            <i class="fas fa-edit me-2 text-warning"></i>Edit Inventory Item
+        </div>
+        <div class="topbar-right">
+            <a th:href="@{/inventory}" class="btn-farm-outline">
+                <i class="fas fa-arrow-left"></i> Back to Inventory
+            </a>
+        </div>
+    </div>
+
+    <div class="page-content">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="farm-card">
+                    <div class="farm-card-header">
+                        <h5>
+                            <i class="fas fa-edit me-2 text-warning"></i>
+                            Edit Item Details
+                        </h5>
+                    </div>
+                    <div class="p-4">
+                        <form th:action="@{/inventory/edit/{id}(id=${inventory.id})}"
+                              method="post" class="farm-form">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label>Item Name *</label>
+                                    <input type="text" name="itemName"
+                                           class="form-control"
+                                           th:value="${inventory.itemName}"
+                                           required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Category *</label>
+                                    <select name="category"
+                                            class="form-select" required>
+                                        <option value="Seed"
+                                                th:selected="${inventory.category == 'Seed'}">
+                                            Seed (Mbegu)</option>
+                                        <option value="Fertilizer"
+                                                th:selected="${inventory.category == 'Fertilizer'}">
+                                            Fertilizer (Mbolea)</option>
+                                        <option value="Equipment"
+                                                th:selected="${inventory.category == 'Equipment'}">
+                                            Equipment (Zana)</option>
+                                        <option value="Pesticide"
+                                                th:selected="${inventory.category == 'Pesticide'}">
+                                            Pesticide (Dawa)</option>
+                                        <option value="Other"
+                                                th:selected="${inventory.category == 'Other'}">
+                                            Other (Nyingine)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Quantity *</label>
+                                    <input type="number" name="quantity"
+                                           class="form-control"
+                                           th:value="${inventory.quantity}"
+                                           step="0.01" min="0" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Unit *</label>
+                                    <select name="unit"
+                                            class="form-select" required>
+                                        <option value="kg"
+                                                th:selected="${inventory.unit == 'kg'}">
+                                            Kilograms (kg)</option>
+                                        <option value="g"
+                                                th:selected="${inventory.unit == 'g'}">
+                                            Grams (g)</option>
+                                        <option value="litres"
+                                                th:selected="${inventory.unit == 'litres'}">
+                                            Litres</option>
+                                        <option value="ml"
+                                                th:selected="${inventory.unit == 'ml'}">
+                                            Millilitres (ml)</option>
+                                        <option value="bags"
+                                                th:selected="${inventory.unit == 'bags'}">
+                                            Bags (Magunia)</option>
+                                        <option value="pieces"
+                                                th:selected="${inventory.unit == 'pieces'}">
+                                            Pieces (Vipande)</option>
+                                        <option value="tonnes"
+                                                th:selected="${inventory.unit == 'tonnes'}">
+                                            Tonnes</option>
+                                        <option value="packets"
+                                                th:selected="${inventory.unit == 'packets'}">
+                                            Packets (Pakiti)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Supplier</label>
+                                    <input type="text" name="supplier"
+                                           class="form-control"
+                                           th:value="${inventory.supplier}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Purchase Date</label>
+                                    <input type="date" name="purchaseDate"
+                                           class="form-control"
+                                           th:value="${inventory.purchaseDate}">
+                                </div>
+                                <div class="col-12">
+                                    <label>Notes</label>
+                                    <textarea name="notes"
+                                              class="form-control" rows="3"
+                                              th:text="${inventory.notes}"></textarea>
+                                </div>
+                                <div class="col-12 d-flex gap-3 mt-2">
+                                    <button type="submit" class="btn-farm">
+                                        <i class="fas fa-save"></i> Update Item
+                                    </button>
+                                    <a th:href="@{/inventory}"
+                                       class="btn-farm-outline">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

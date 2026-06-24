@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Record New Sale - Farm Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">
+            <i class="fas fa-hand-holding-dollar me-2 text-success"></i>
+            Record New Sale
+        </div>
+        <div class="topbar-right">
+            <a th:href="@{/finance}" class="btn-farm-outline">
+                <i class="fas fa-arrow-left"></i> Back to Finances
+            </a>
+        </div>
+    </div>
+
+    <div class="page-content">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="farm-card">
+                    <div class="farm-card-header">
+                        <h5>
+                            <i class="fas fa-coins me-2 text-warning"></i>
+                            Sale Details
+                        </h5>
+                    </div>
+                    <div class="p-4">
+
+                        <div th:if="${#lists.isEmpty(crops)}"
+                             class="alert-farm-error mb-4">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            You do not have crops yet.
+                            <a th:href="@{/crops/add}" class="fw-bold">Add a crop first</a>
+                        </div>
+
+                        <form th:if="${!#lists.isEmpty(crops)}"
+                              th:action="@{/finance/sales/add}"
+                              method="post" class="farm-form">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label>Select Crop *</label>
+                                    <select name="cropId" id="cropSelect"
+                                            class="form-select" required
+                                            onchange="showCropImage()">
+                                        <option value="">-- Select Crop --</option>
+                                        <option th:each="crop : ${crops}"
+                                                th:value="${crop.id}"
+                                                th:data-image="${cropImageMap[crop.cropName]}"
+                                                th:text="${crop.cropName + ' — ' + crop.fieldLocation}">
+                                        </option>
+                                    </select>
+                                    <div class="mt-2">
+                                        <img id="selectedCropImg"
+                                             style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--primary);display:none;">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Sale Date *</label>
+                                    <input type="date" name="saleDate"
+                                           id="saleDate"
+                                           class="form-control" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Quantity Sold *</label>
+                                    <input type="number" name="quantitySold"
+                                           id="quantitySold"
+                                           class="form-control"
+                                           placeholder="e.g. 100"
+                                           step="0.01" min="0"
+                                           required
+                                           onchange="calcTotal()">
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Unit *</label>
+                                    <select name="unit" class="form-select" required>
+                                        <option value="kg">Kilogram (kg)</option>
+                                        <option value="tonnes">Tonnes</option>
+                                        <option value="bags">Bags (Magunia)</option>
+                                        <option value="pieces">Pieces</option>
+                                        <option value="litres">Litre</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Price per Unit (TZS) *</label>
+                                    <input type="number" name="pricePerUnit"
+                                           id="pricePerUnit"
+                                           class="form-control"
+                                           placeholder="e.g. 800"
+                                           step="0.01" min="0"
+                                           required
+                                           onchange="calcTotal()">
+                                </div>
+
+                                <!-- Auto-calculated total -->
+                                <div class="col-12">
+                                    <div style="background:var(--primary-light);border-radius:12px;padding:16px;border:1px solid var(--border);">
+                                        <div style="font-size:13px;color:var(--text-muted);">
+                                            Total Sales (Auto-calculated)
+                                        </div>
+                                        <div style="font-size:24px;font-weight:700;color:var(--primary);">
+                                            TZS <span id="totalDisplay">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Buyer Name</label>
+                                    <input type="text" name="buyerName"
+                                           class="form-control"
+                                           placeholder="e.g. Mohamed Ali">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Market Location</label>
+                                    <select name="marketLocation" class="form-select">
+                                        <option value="">Select Market</option>
+                                        <option value="Dodoma Market">Dodoma Market</option>
+                                        <option value="Kariakoo - Dar es Salaam">Kariakoo - Dar es Salaam</option>
+                                        <option value="Arusha Market">Arusha Market</option>
+                                        <option value="Mwanza Market">Mwanza Market</option>
+                                        <option value="Moshi Market">Moshi Market</option>
+                                        <option value="Morogoro Market">Morogoro Market</option>
+                                        <option value="Iringa Market">Iringa Market</option>
+                                        <option value="Mbeya Market">Mbeya Market</option>
+                                        <option value="Tanga Market">Tanga Market</option>
+                                        <option value="Songea Market">Songea Market</option>
+                                        <option value="Tabora Market">Tabora Market</option>
+                                        <option value="Kigoma Market">Kigoma Market</option>
+                                        <option value="Zanzibar Market">Zanzibar Market</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label>Details</label>
+                                    <textarea name="notes"
+                                              class="form-control" rows="2"
+                                              placeholder="Additional details..."></textarea>
+                                </div>
+                                <div class="col-12 d-flex gap-3 mt-2">
+                                    <button type="submit" class="btn-farm">
+                                        <i class="fas fa-save"></i> Save Sale
+                                    </button>
+                                    <a th:href="@{/finance}" class="btn-farm-outline">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('saleDate').max = today;
+    });
+
+    function showCropImage() {
+        const select = document.getElementById('cropSelect');
+        const opt = select.options[select.selectedIndex];
+        const img = document.getElementById('selectedCropImg');
+        const url = opt.getAttribute('data-image');
+        if (url) {
+            img.src = url;
+            img.style.display = 'block';
+        } else {
+            img.style.display = 'none';
+        }
+    }
+
+    function calcTotal() {
+        const qty = parseFloat(document.getElementById('quantitySold').value) || 0;
+        const price = parseFloat(document.getElementById('pricePerUnit').value) || 0;
+        const total = qty * price;
+        document.getElementById('totalDisplay').textContent =
+            total.toLocaleString('en-TZ');
+    }
+</script>
+</body>
+</html>

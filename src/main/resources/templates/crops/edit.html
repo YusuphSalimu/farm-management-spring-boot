@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Crop - Farm Management System</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">
+            <i class="fas fa-edit me-2 text-success"></i>Edit Crop
+        </div>
+        <div class="topbar-right">
+            <a th:href="@{/crops}" class="btn-farm-outline">
+                <i class="fas fa-arrow-left"></i> Back to Crops
+            </a>
+        </div>
+    </div>
+
+    <div class="page-content">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="farm-card">
+                    <div class="farm-card-header">
+                        <h5><i class="fas fa-edit me-2 text-success"></i>
+                            Edit Crop Details</h5>
+                    </div>
+                    <div class="p-4">
+                        <form th:action="@{/crops/edit/{id}(id=${crop.id})}"
+                              method="post" class="farm-form">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label>Crop Name *</label>
+                                    <input type="text" name="cropName"
+                                           class="form-control"
+                                           th:value="${crop.cropName}"
+                                           required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Crop Type *</label>
+                                    <select name="cropType"
+                                            class="form-select" required>
+                                        <option value="Cereal"
+                                                th:selected="${crop.cropType == 'Cereal'}">Cereal</option>
+                                        <option value="Legume"
+                                                th:selected="${crop.cropType == 'Legume'}">Legume</option>
+                                        <option value="Vegetable"
+                                                th:selected="${crop.cropType == 'Vegetable'}">Vegetable</option>
+                                        <option value="Fruit"
+                                                th:selected="${crop.cropType == 'Fruit'}">Fruit</option>
+                                        <option value="Oilseed"
+                                                th:selected="${crop.cropType == 'Oilseed'}">Oilseed</option>
+                                        <option value="Cash Crop"
+                                                th:selected="${crop.cropType == 'Cash Crop'}">Cash Crop</option>
+                                        <option value="Root Crop"
+                                                th:selected="${crop.cropType == 'Root Crop'}">Root Crop</option>
+                                        <option value="Other"
+                                                th:selected="${crop.cropType == 'Other'}">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Planting Date *</label>
+                                    <input type="date" name="plantingDate"
+                                           id="plantingDate"
+                                           class="form-control"
+                                           th:value="${crop.plantingDate}"
+                                           required
+                                           onchange="setMinHarvestDate()">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Expected Harvest Date *</label>
+                                    <input type="date"
+                                           name="expectedHarvestDate"
+                                           id="expectedHarvestDate"
+                                           class="form-control"
+                                           th:value="${crop.expectedHarvestDate}"
+                                           required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Field Location *</label>
+                                    <input type="text" name="fieldLocation"
+                                           class="form-control"
+                                           th:value="${crop.fieldLocation}"
+                                           required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Status *</label>
+                                    <select name="status" class="form-select">
+                                        <option value="GROWING"
+                                                th:selected="${crop.status == 'GROWING'}">Growing</option>
+                                        <option value="HARVESTED"
+                                                th:selected="${crop.status == 'HARVESTED'}">Harvested</option>
+                                        <option value="FAILED"
+                                                th:selected="${crop.status == 'FAILED'}">Failed</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label>Notes</label>
+                                    <textarea name="notes"
+                                              class="form-control" rows="3"
+                                              th:text="${crop.notes}"></textarea>
+                                </div>
+                                <div class="col-12 d-flex gap-3 mt-2">
+                                    <button type="submit" class="btn-farm">
+                                        <i class="fas fa-save"></i> Update Crop
+                                    </button>
+                                    <a th:href="@{/crops}"
+                                       class="btn-farm-outline">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function setMinHarvestDate() {
+        const plantingDate = document.getElementById('plantingDate').value;
+        if (plantingDate) {
+            const minDate = new Date(plantingDate);
+            minDate.setDate(minDate.getDate() + 1);
+            const year = minDate.getFullYear();
+            const month = String(minDate.getMonth() + 1).padStart(2, '0');
+            const day = String(minDate.getDate()).padStart(2, '0');
+            const formatted = `${year}-${month}-${day}`;
+            const harvestInput = document.getElementById('expectedHarvestDate');
+            harvestInput.min = formatted;
+            if (harvestInput.value && harvestInput.value < formatted) {
+                harvestInput.value = '';
+            }
+        }
+    }
+
+    // On page load set min harvest based on existing planting date
+    document.addEventListener('DOMContentLoaded', function() {
+        const plantingDate = document.getElementById('plantingDate').value;
+        if (plantingDate) {
+            const minDate = new Date(plantingDate);
+            minDate.setDate(minDate.getDate() + 1);
+            const year = minDate.getFullYear();
+            const month = String(minDate.getMonth() + 1).padStart(2, '0');
+            const day = String(minDate.getDate()).padStart(2, '0');
+            document.getElementById('expectedHarvestDate').min =
+                `${year}-${month}-${day}`;
+        }
+    });
+</script>
+</body>
+</html>

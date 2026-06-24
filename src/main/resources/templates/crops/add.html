@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Crop - Farm Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        .crop-option {
+            cursor: pointer;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .crop-option:hover, .crop-option.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        .crop-option img {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .crop-option p {
+            font-size: 11px;
+            font-weight: 600;
+            margin: 6px 0 0;
+            color: var(--text-dark);
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">
+            <i class="fas fa-plus me-2 text-success"></i>Add New Crop
+        </div>
+        <div class="topbar-right">
+            <a th:href="@{/crops}" class="btn-farm-outline">
+                <i class="fas fa-arrow-left"></i> Back to Crops
+            </a>
+        </div>
+    </div>
+
+    <div class="page-content">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+
+                <!-- Quick Select Crops -->
+                <div class="farm-card mb-4">
+                    <div class="farm-card-header">
+                        <h5><i class="fas fa-seedling me-2 text-success"></i>
+                            Quick Select Crop (Tanzania — All Crops)</h5>
+                    </div>
+                    <div class="p-4">
+                        <div class="row g-3" id="cropSelector">
+
+                            <!-- 1. Zabibu -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Zabibu','Fruit','Dodoma')">
+                                    <img src="https://plus.unsplash.com/premium_photo-1675727579600-b2656a265c15?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8Z3JhcGVzJTIwdmluZXlhcmR8ZW58MHx8MHx8fDA%3D" alt="Zabibu">
+                                    <p>Zabibu</p>
+                                </div>
+                            </div>
+
+                            <!-- 2. Alizeti -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Alizeti','Oilseed','Dodoma')">
+                                    <img src="https://images.unsplash.com/photo-1540039906769-84cf3d448bc1?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8c3VuZmxvd2VyJTIwZmllbGR8ZW58MHx8MHx8fDA%3D" alt="Alizeti">
+                                    <p>Alizeti</p>
+                                </div>
+                            </div>
+
+                            <!-- 3. Mahindi -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Mahindi','Cereal','Dodoma')">
+                                    <img src="https://plus.unsplash.com/premium_photo-1664299124175-e2c793325bfa?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8bWFpemUlMjBjb3JuJTIwZmllbGR8ZW58MHx8MHx8fDA%3D" alt="Mahindi">
+                                    <p>Mahindi</p>
+                                </div>
+                            </div>
+
+                            <!-- 4. Mchele -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Mchele','Cereal','Morogoro')">
+                                    <img src="https://images.unsplash.com/photo-1728895604559-a4e16081504e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cmljZSUyMHBhZGR5JTIwZmllbGR8ZW58MHx8MHx8fDA%3D" alt="Mchele">
+                                    <p>Mchele</p>
+                                </div>
+                            </div>
+
+                            <!-- 5. Karanga -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Karanga','Legume','Dodoma')">
+                                    <img src="https://plus.unsplash.com/premium_photo-1726072356924-e29e8999df09?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cGVhbnV0cyUyMGdyb3VuZG51dHN8ZW58MHx8MHx8fDA%3D" alt="Karanga">
+                                    <p>Karanga</p>
+                                </div>
+                            </div>
+
+                            <!-- 6. Mtama -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Mtama','Cereal','Dodoma')">
+                                    <img src="https://images.unsplash.com/photo-1632666243899-817d6d7dfb0f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHNvcmdodW0lMjBncmFpbnxlbnwwfHwwfHx8MA%3D%3D" alt="Mtama">
+                                    <p>Mtama</p>
+                                </div>
+                            </div>
+
+                            <!-- 7. Maharage -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Maharage','Legume','Arusha')">
+                                    <img src="https://images.unsplash.com/flagged/photo-1577226259316-c566059cd6fc?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGtpZG5leSUyMGJlYW5zfGVufDB8fDB8fHww" alt="Maharage">
+                                    <p>Maharage</p>
+                                </div>
+                            </div>
+
+                            <!-- 8. Nyanya -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Nyanya','Vegetable','Iringa')">
+                                    <img src="https://images.unsplash.com/photo-1582284540020-8acbe03f4924?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dG9tYXRvZXMlMjBmcmVzaHxlbnwwfHwwfHx8MA%3D%3D" alt="Nyanya">
+                                    <p>Nyanya</p>
+                                </div>
+                            </div>
+
+                            <!-- 9. Vitunguu -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Vitunguu','Vegetable','Dodoma')">
+                                    <img src="https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8b25pb25zJTIwcmVkfGVufDB8fDB8fHww" alt="Vitunguu">
+                                    <p>Vitunguu</p>
+                                </div>
+                            </div>
+
+                            <!-- 10. Ulezi -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Ulezi','Cereal','Dodoma')">
+                                    <img src="https://images.unsplash.com/photo-1768729339998-909158957162?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZmluZ2VyJTIwbWlsbGV0fGVufDB8fDB8fHww" alt="Ulezi">
+                                    <p>Ulezi</p>
+                                </div>
+                            </div>
+
+                            <!-- 11. Pamba -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Pamba','Cash Crop','Dodoma')">
+                                    <img src="https://images.unsplash.com/photo-1660070608618-7490a6377929?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fGNvdHRvbiUyMGZpZWxkfGVufDB8fDB8fHww" alt="Pamba">
+                                    <p>Pamba</p>
+                                </div>
+                            </div>
+
+                            <!-- 12. Muhogo -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Muhogo','Root Crop','Pwani')">
+                                    <img src="https://images.unsplash.com/photo-1757281096972-10fd02b0f5ea?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Y2Fzc2F2YSUyMHJvb3R8ZW58MHx8MHx8fDA%3D" alt="Muhogo">
+                                    <p>Mihogo</p>
+                                </div>
+                            </div>
+
+                            <!-- 13. Karafuu -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Karafuu','Cash Crop','Zanzibar - Pemba Kaskazini')">
+                                    <img src="https://plus.unsplash.com/premium_photo-1722945788534-7dc8af951829?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fGNsb3ZlcyUyMHNwaWNlfGVufDB8fDB8fHww" alt="Karafuu">
+                                    <p>Karafuu</p>
+                                </div>
+                            </div>
+
+                            <!-- 14. Machungwa -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Machungwa','Fruit','Tanga - Muheza')">
+                                    <img src="https://plus.unsplash.com/premium_photo-1664114727312-12d73a52b3c7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8b3JhbmdlJTIwZnJ1aXQlMjB0cmVlfGVufDB8fDB8fHww" alt="Machungwa">
+                                    <p>Machungwa</p>
+                                </div>
+                            </div>
+
+                            <!-- 15. Chai -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Chai','Cash Crop','Tanga - Muheza')">
+                                    <img src="https://plus.unsplash.com/premium_photo-1769958227869-036b7301e5c7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8dGVhJTIwbGVhdmVzJTIwcGxhbnRhdGlvbnxlbnwwfHwwfHx8MA%3D%3D" alt="Chai">
+                                    <p>Chai</p>
+                                </div>
+                            </div>
+
+                            <!-- 16. Ndizi -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Ndizi','Fruit','Kilimanjaro - Moshi')">
+                                    <img src="https://images.unsplash.com/photo-1620036924477-c3d6e9ce36fc?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YmFuYW5hJTIwcGxhbnRhdGlvbnxlbnwwfHwwfHx8MA%3D%3D" alt="Ndizi">
+                                    <p>Ndizi</p>
+                                </div>
+                            </div>
+
+                            <!-- 17. Kahawa -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Kahawa','Cash Crop','Kilimanjaro')">
+                                    <img src="https://images.unsplash.com/photo-1606486544554-164d98da4889?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGNvZmZlZSUyMGJlYW5zfGVufDB8fDB8fHww" alt="Kahawa">
+                                    <p>Kahawa</p>
+                                </div>
+                            </div>
+
+                            <!-- 18. Korosho -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Korosho','Cash Crop','Mtwara')">
+                                    <img src="https://images.unsplash.com/photo-1726771517475-e7acdd34cd8a?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y2FzaGV3JTIwbnV0fGVufDB8fDB8fHww" alt="Korosho">
+                                    <p>Korosho</p>
+                                </div>
+                            </div>
+
+                            <!-- 19. Miwa -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Miwa','Cash Crop','Morogoro - Kilosa')">
+                                    <img src="https://images.unsplash.com/photo-1679543321530-4378c81af100?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8c3VnYXJjYW5lfGVufDB8fDB8fHww" alt="Miwa">
+                                    <p>Miwa</p>
+                                </div>
+                            </div>
+
+                            <!-- 20. Ufuta -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Ufuta','Oilseed','Lindi')">
+                                    <img src="https://plus.unsplash.com/premium_photo-1674654419404-667fcdd0fe13?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8c2VzYW1lJTIwc2VlZHN8ZW58MHx8MHx8fDA%3D" alt="Ufuta">
+                                    <p>Ufuta</p>
+                                </div>
+                            </div>
+
+                            <!-- 21. Kunde -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Kunde','Legume','Mwanza')">
+                                    <img src="https://plus.unsplash.com/premium_photo-1671130295735-25af5e78d40c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Y293cGVhJTIwYmVhbnN8ZW58MHx8MHx8fDA%3D" alt="Kunde">
+                                    <p>Kunde</p>
+                                </div>
+                            </div>
+
+                            <!-- 22. Viazi -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Viazi','Root Crop','Iringa')">
+                                    <img src="https://images.unsplash.com/photo-1675501344642-92d35d90fe51?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cG90YXRvJTIwaGFydmVzdHxlbnwwfHwwfHx8MA%3D%3D" alt="Viazi">
+                                    <p>Viazi</p>
+                                </div>
+                            </div>
+
+                            <!-- 23. Pilipili -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Pilipili','Vegetable','Arusha')">
+                                    <img src="https://images.unsplash.com/photo-1567539549213-cc1697632146?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Y2hpbGklMjBwZXBwZXJ8ZW58MHx8MHx8fDA%3D" alt="Pilipili">
+                                    <p>Pilipili</p>
+                                </div>
+                            </div>
+
+                            <!-- 24. Bamia -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Bamia','Vegetable','Dodoma')">
+                                    <img src="https://images.unsplash.com/photo-1558408525-1092038389ae?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8b2tyYSUyMHZlZ2V0YWJsZXxlbnwwfHwwfHx8MA%3D%3D" alt="Bamia">
+                                    <p>Bamia</p>
+                                </div>
+                            </div>
+
+                            <!-- 25. Mananasi -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Mananasi','Fruit','Pwani - Kibaha')">
+                                    <img src="https://images.unsplash.com/photo-1683412347374-9452272cbe2a?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHBpbmVhcHBsZSUyMGZydWl0fGVufDB8fDB8fHww" alt="Mananasi">
+                                    <p>Mananasi</p>
+                                </div>
+                            </div>
+
+                            <!-- 26. Embe -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Embe','Fruit','Pwani')">
+                                    <img src="https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bWFuZ298ZW58MHx8MHx8fDA%3D" alt="Embe">
+                                    <p>Embe</p>
+                                </div>
+                            </div>
+
+                            <!-- 27. Papai -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Papai','Fruit','Morogoro')">
+                                    <img src="https://plus.unsplash.com/premium_photo-1664391808687-55acdf5c7317?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cGFwYXlhfGVufDB8fDB8fHww" alt="Papai">
+                                    <p>Papai</p>
+                                </div>
+                            </div>
+
+                            <!-- 28. Limao -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Limao','Fruit','Tanga')">
+                                    <img src="https://images.unsplash.com/photo-1512506941056-539bf4301ce2?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fGdyZWVuJTIwbGVtb258ZW58MHx8MHx8fDA%3D" alt="Limao">
+                                    <p>Limao</p>
+                                </div>
+                            </div>
+
+                            <!-- 29. Tikiti -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Tikiti','Fruit','Dodoma')">
+                                    <img src="https://images.unsplash.com/photo-1675346980561-66d6231f8bf7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8d2F0ZXJtZWxvbiUyMGhhcnZlc3R8ZW58MHx8MHx8fDA%3D" alt="Tikiti">
+                                    <p>Tikiti</p>
+                                </div>
+                            </div>
+
+                            <!-- 30. Parachichi -->
+                            <div class="col-4 col-md-2">
+                                <div class="crop-option"
+                                     onclick="selectCrop('Parachichi','Fruit','Mbeya')">
+                                    <img src="https://images.unsplash.com/photo-1671624749229-7d37826013b5?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZvY2FkbyUyMHRyZWV8ZW58MHx8MHx8fDA%3D" alt="Parachichi">
+                                    <p>Parachichi</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Crop Form -->
+                <div class="farm-card">
+                    <div class="farm-card-header">
+                        <h5><i class="fas fa-plus-circle me-2 text-success"></i>
+                            Crop Details</h5>
+                    </div>
+                    <div class="p-4">
+                        <form th:action="@{/crops/add}"
+                              method="post" class="farm-form">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label>Crop Name *</label>
+                                    <select name="cropName" id="cropNameInput"
+                                            class="form-select" required
+                                            onchange="autofillCropType()">
+                                        <option value="">-- Choose Crop --</option>
+                                        <option value="Zabibu">Zabibu (Grapes)</option>
+                                        <option value="Alizeti">Alizeti (Sunflower)</option>
+                                        <option value="Mahindi">Mahindi (Maize)</option>
+                                        <option value="Mchele">Mchele (Rice)</option>
+                                        <option value="Karanga">Karanga (Groundnuts)</option>
+                                        <option value="Mtama">Mtama (Sorghum)</option>
+                                        <option value="Maharage">Maharage (Beans)</option>
+                                        <option value="Nyanya">Nyanya (Tomatoes)</option>
+                                        <option value="Vitunguu">Vitunguu (Onions)</option>
+                                        <option value="Ulezi">Ulezi (Millet)</option>
+                                        <option value="Pamba">Pamba (Cotton)</option>
+                                        <option value="Muhogo">Muhogo (Cassava)</option>
+                                        <option value="Karafuu">Karafuu (Cloves)</option>
+                                        <option value="Machungwa">Machungwa (Orange)</option>
+                                        <option value="Chai">Chai (Tea)</option>
+                                        <option value="Ndizi">Ndizi (Banana)</option>
+                                        <option value="Kahawa">Kahawa (Coffee)</option>
+                                        <option value="Korosho">Korosho (Cashew)</option>
+                                        <option value="Miwa">Miwa (Sugarcane)</option>
+                                        <option value="Ufuta">Ufuta (Sesame)</option>
+                                        <option value="Kunde">Kunde (Cowpea)</option>
+                                        <option value="Viazi">Viazi (Potato)</option>
+                                        <option value="Pilipili">Pilipili (Chili)</option>
+                                        <option value="Bamia">Bamia (Okra)</option>
+                                        <option value="Mananasi">Mananasi (Pineapple)</option>
+                                        <option value="Embe">Embe (Mango)</option>
+                                        <option value="Papai">Papai (Papaya)</option>
+                                        <option value="Limao">Limao (Lemon)</option>
+                                        <option value="Tikiti">Tikiti (Watermelon)</option>
+                                        <option value="Parachichi">Parachichi (Avocado-Mbeya)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Crop Type *</label>
+                                    <select name="cropType"
+                                            id="cropTypeInput"
+                                            class="form-select" required>
+                                        <option value="">Select Type</option>
+                                        <option value="Cereal">Cereal</option>
+                                        <option value="Legume">Legume</option>
+                                        <option value="Vegetable">Vegetable</option>
+                                        <option value="Fruit">Fruit</option>
+                                        <option value="Oilseed">Oilseed</option>
+                                        <option value="Cash Crop">Cash Crop</option>
+                                        <option value="Root Crop">Root Crop</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Planting Date *</label>
+                                    <input type="date" name="plantingDate"
+                                           id="plantingDate"
+                                           class="form-control" required
+                                           onchange="setMinHarvestDate()">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Expected Harvest Date *</label>
+                                    <input type="date"
+                                           name="expectedHarvestDate"
+                                           id="expectedHarvestDate"
+                                           class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Field Location *</label>
+                                    <select name="fieldLocation" id="locationInput"
+                                            class="form-select" required>
+                                        <option value="">Select Region/Town</option>
+                                        <optgroup label="Central Zone">
+                                            <option value="Dodoma">Dodoma (Makao Makuu)</option>
+                                            <option value="Dodoma - Kondoa">Dodoma - Kondoa</option>
+                                            <option value="Dodoma - Mpwapwa">Dodoma - Mpwapwa</option>
+                                            <option value="Dodoma - Chamwino">Dodoma - Chamwino</option>
+                                            <option value="Singida">Singida</option>
+                                            <option value="Singida - Manyoni">Singida - Manyoni</option>
+                                            <option value="Singida - Iramba">Singida - Iramba</option>
+                                        </optgroup>
+                                        <optgroup label="Northern Zone">
+                                            <option value="Arusha">Arusha</option>
+                                            <option value="Kilimanjaro">Kilimanjaro</option>
+                                            <option value="Kilimanjaro - Moshi">Kilimanjaro - Moshi</option>
+                                            <option value="Kilimanjaro - Rombo">Kilimanjaro - Rombo</option>
+                                            <option value="Manyara">Manyara</option>
+                                            <option value="Manyara - Babati">Manyara - Babati</option>
+                                            <option value="Manyara - Mbulu">Manyara - Mbulu</option>
+                                            <option value="Tanga">Tanga</option>
+                                            <option value="Tanga - Korogwe">Tanga - Korogwe</option>
+                                            <option value="Tanga - Muheza">Tanga - Muheza</option>
+                                        </optgroup>
+                                        <optgroup label="Eastern Zone">
+                                            <option value="Dar es Salaam">Dar es Salaam</option>
+                                            <option value="Dar es Salaam - Kinondoni">Dar es Salaam - Kinondoni</option>
+                                            <option value="Dar es Salaam - Ilala">Dar es Salaam - Ilala</option>
+                                            <option value="Dar es Salaam - Temeke">Dar es Salaam - Temeke</option>
+                                            <option value="Dar es Salaam - Ubungo">Dar es Salaam - Ubungo</option>
+                                            <option value="Pwani">Pwani (Coast)</option>
+                                            <option value="Pwani - Bagamoyo">Pwani - Bagamoyo</option>
+                                            <option value="Pwani - Kibaha">Pwani - Kibaha</option>
+                                            <option value="Pwani - Mafia">Pwani - Mafia</option>
+                                            <option value="Morogoro">Morogoro</option>
+                                            <option value="Morogoro - Kilosa">Morogoro - Kilosa</option>
+                                            <option value="Morogoro - Mvomero">Morogoro - Mvomero</option>
+                                        </optgroup>
+                                        <optgroup label="Southern Zone">
+                                            <option value="Lindi">Lindi</option>
+                                            <option value="Lindi - Kilwa">Lindi - Kilwa</option>
+                                            <option value="Mtwara">Mtwara</option>
+                                            <option value="Mtwara - Masasi">Mtwara - Masasi</option>
+                                            <option value="Mtwara - Newala">Mtwara - Newala</option>
+                                            <option value="Ruvuma">Ruvuma</option>
+                                            <option value="Ruvuma - Songea">Ruvuma - Songea</option>
+                                            <option value="Ruvuma - Mbinga">Ruvuma - Mbinga</option>
+                                        </optgroup>
+                                        <optgroup label="Southwest Zone">
+                                            <option value="Iringa">Iringa</option>
+                                            <option value="Iringa - Mufindi">Iringa - Mufindi</option>
+                                            <option value="Njombe">Njombe</option>
+                                            <option value="Njombe - Makete">Njombe - Makete</option>
+                                            <option value="Mbeya">Mbeya</option>
+                                            <option value="Mbeya - Rungwe">Mbeya - Rungwe</option>
+                                            <option value="Mbeya - Chunya">Mbeya - Chunya</option>
+                                            <option value="Songwe">Songwe</option>
+                                            <option value="Songwe - Mbozi">Songwe - Mbozi</option>
+                                        </optgroup>
+                                        <optgroup label="Western Zone">
+                                            <option value="Tabora">Tabora</option>
+                                            <option value="Tabora - Igunga">Tabora - Igunga</option>
+                                            <option value="Tabora - Nzega">Tabora - Nzega</option>
+                                            <option value="Kigoma">Kigoma</option>
+                                            <option value="Kigoma - Kasulu">Kigoma - Kasulu</option>
+                                            <option value="Katavi">Katavi</option>
+                                            <option value="Katavi - Mpanda">Katavi - Mpanda</option>
+                                            <option value="Rukwa">Rukwa</option>
+                                            <option value="Rukwa - Sumbawanga">Rukwa - Sumbawanga</option>
+                                        </optgroup>
+                                        <optgroup label="Lake Zone">
+                                            <option value="Mwanza">Mwanza</option>
+                                            <option value="Mwanza - Sengerema">Mwanza - Sengerema</option>
+                                            <option value="Geita">Geita</option>
+                                            <option value="Geita - Chato">Geita - Chato</option>
+                                            <option value="Kagera">Kagera</option>
+                                            <option value="Kagera - Bukoba">Kagera - Bukoba</option>
+                                            <option value="Mara">Mara</option>
+                                            <option value="Mara - Musoma">Mara - Musoma</option>
+                                            <option value="Simiyu">Simiyu</option>
+                                            <option value="Simiyu - Bariadi">Simiyu - Bariadi</option>
+                                            <option value="Shinyanga">Shinyanga</option>
+                                            <option value="Shinyanga - Kahama">Shinyanga - Kahama</option>
+                                        </optgroup>
+                                        <optgroup label="Zanzibar">
+                                            <option value="Zanzibar - Unguja Kaskazini">Zanzibar - Unguja Kaskazini</option>
+                                            <option value="Zanzibar - Unguja Kusini">Zanzibar - Unguja Kusini</option>
+                                            <option value="Zanzibar - Mjini Magharibi">Zanzibar - Mjini Magharibi</option>
+                                            <option value="Zanzibar - Pemba Kaskazini">Zanzibar - Pemba Kaskazini</option>
+                                            <option value="Zanzibar - Pemba Kusini">Zanzibar - Pemba Kusini</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Status *</label>
+                                    <select name="status" class="form-select">
+                                        <option value="GROWING">Growing</option>
+                                        <option value="HARVESTED">Harvested</option>
+                                        <option value="FAILED">Failed</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label>Notes</label>
+                                    <textarea name="notes"
+                                              class="form-control" rows="3"
+                                              placeholder="Additional notes..."></textarea>
+                                </div>
+                                <div class="col-12 d-flex gap-3 mt-2">
+                                    <button type="submit" class="btn-farm">
+                                        <i class="fas fa-save"></i> Save Crop
+                                    </button>
+                                    <a th:href="@{/crops}"
+                                       class="btn-farm-outline">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function selectCrop(name, type, location) {
+        const nameSelect = document.getElementById('cropNameInput');
+        for (let i = 0; i < nameSelect.options.length; i++) {
+            if (nameSelect.options[i].value === name) {
+                nameSelect.selectedIndex = i;
+                break;
+            }
+        }
+        const typeSelect = document.getElementById('cropTypeInput');
+        for (let i = 0; i < typeSelect.options.length; i++) {
+            if (typeSelect.options[i].value === type) {
+                typeSelect.selectedIndex = i;
+                break;
+            }
+        }
+        const locationSelect = document.getElementById('locationInput');
+        for (let i = 0; i < locationSelect.options.length; i++) {
+            if (locationSelect.options[i].value === location) {
+                locationSelect.selectedIndex = i;
+                break;
+            }
+        }
+        document.querySelectorAll('.crop-option').forEach(el => {
+            el.classList.remove('selected');
+        });
+        event.currentTarget.classList.add('selected');
+    }
+
+    function autofillCropType() {
+        const cropTypes = {
+            'Zabibu': 'Fruit',
+            'Alizeti': 'Oilseed',
+            'Mahindi': 'Cereal',
+            'Mchele': 'Cereal',
+            'Karanga': 'Legume',
+            'Mtama': 'Cereal',
+            'Maharage': 'Legume',
+            'Nyanya': 'Vegetable',
+            'Vitunguu': 'Vegetable',
+            'Ulezi': 'Cereal',
+            'Pamba': 'Cash Crop',
+            'Muhogo': 'Root Crop',
+            'Karafuu': 'Cash Crop',
+            'Machungwa': 'Fruit',
+            'Chai': 'Cash Crop',
+            'Ndizi': 'Fruit',
+            'Kahawa': 'Cash Crop',
+            'Korosho': 'Cash Crop',
+            'Miwa': 'Cash Crop',
+            'Ufuta': 'Oilseed',
+            'Kunde': 'Legume',
+            'Viazi': 'Root Crop',
+            'Pilipili': 'Vegetable',
+            'Bamia': 'Vegetable',
+            'Mananasi': 'Fruit',
+            'Embe': 'Fruit',
+            'Papai': 'Fruit',
+            'Limao': 'Fruit',
+            'Tikiti': 'Fruit',
+            'Parachichi': 'Fruit'
+        };
+        const cropName = document.getElementById('cropNameInput').value;
+        const typeSelect = document.getElementById('cropTypeInput');
+        if (cropTypes[cropName]) {
+            for (let i = 0; i < typeSelect.options.length; i++) {
+                if (typeSelect.options[i].value === cropTypes[cropName]) {
+                    typeSelect.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+        document.querySelectorAll('.crop-option').forEach(el => {
+            el.classList.remove('selected');
+            const cropP = el.querySelector('p');
+            if (cropP && cropP.textContent === cropName) {
+                el.classList.add('selected');
+            }
+        });
+    }
+
+    function setMinHarvestDate() {
+        const plantingDate = document.getElementById('plantingDate').value;
+        if (plantingDate) {
+            const minDate = new Date(plantingDate);
+            minDate.setDate(minDate.getDate() + 1);
+            const year = minDate.getFullYear();
+            const month = String(minDate.getMonth() + 1).padStart(2, '0');
+            const day = String(minDate.getDate()).padStart(2, '0');
+            const formatted = `${year}-${month}-${day}`;
+            const harvestInput = document.getElementById('expectedHarvestDate');
+            harvestInput.min = formatted;
+            if (harvestInput.value && harvestInput.value < formatted) {
+                harvestInput.value = '';
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('plantingDate').min = today;
+    });
+</script>
+</body>
+</html>

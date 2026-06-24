@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Farm Management System</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        .admin-header {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .user-row:hover td { background: var(--primary-light); }
+        .status-active {
+            background: #e8f5e9; color: #2e7d32;
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 600;
+        }
+        .status-inactive {
+            background: #fce4ec; color: #c62828;
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 600;
+        }
+        .role-admin {
+            background: #e8eaf6; color: #1a237e;
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 600;
+        }
+        .role-farmer {
+            background: #e8f5e9; color: #2e7d32;
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">
+            <i class="fas fa-users-cog me-2 text-success"></i>
+            Admin Dashboard
+        </div>
+        <div class="topbar-right">
+            <span class="badge bg-danger">
+                <i class="fas fa-shield-alt me-1"></i>Admin Only
+            </span>
+        </div>
+    </div>
+
+    <div class="page-content">
+
+        <!-- Alerts -->
+        <div th:if="${successMessage}" class="alert-farm-success mb-4">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert-farm-error mb-4">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <!-- Admin Header Banner -->
+        <div class="admin-header">
+            <div class="d-flex align-items-center gap-3">
+                <div style="width:55px;height:55px;background:rgba(255,255,255,0.2);
+                     border-radius:14px;display:flex;align-items:center;
+                     justify-content:center;font-size:24px;">
+                    <i class="fas fa-users-cog"></i>
+                </div>
+                <div>
+                    <h4 class="mb-1">User Management</h4>
+                    <p class="mb-0 opacity-75">
+                        Manage all registered users of the system
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-label">Total Users</div>
+                            <div class="stat-value mt-1"
+                                 th:text="${totalUsers}">0</div>
+                        </div>
+                        <div class="stat-icon green">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-label">Active Users</div>
+                            <div class="stat-value mt-1 text-success"
+                                 th:text="${users.?[enabled == true].size()}">0</div>
+                        </div>
+                        <div class="stat-icon green">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-label">Farmers</div>
+                            <div class="stat-value mt-1 text-success"
+                                 th:text="${users.?[role.name == 'ROLE_FARMER'].size()}">0</div>
+                        </div>
+                        <div class="stat-icon green">
+                            <i class="fas fa-tractor"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-label">Admins</div>
+                            <div class="stat-value mt-1 text-primary"
+                                 th:text="${users.?[role.name == 'ROLE_ADMIN'].size()}">0</div>
+                        </div>
+                        <div class="stat-icon blue">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="farm-card">
+            <div class="farm-card-header">
+                <h5>
+                    <i class="fas fa-users me-2 text-success"></i>
+                    All Registered Users
+                    <span class="badge bg-success ms-2"
+                          th:text="${totalUsers}">0</span>
+                </h5>
+            </div>
+            <div class="table-responsive">
+                <table class="farm-table">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Member Since</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(users)}">
+                        <td colspan="7" class="text-center py-4 text-muted">
+                            No users found.
+                        </td>
+                    </tr>
+                    <tr th:each="u, stat : ${users}" class="user-row">
+                        <td th:text="${stat.count}">1</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div style="width:38px;height:38px;
+                                         border-radius:50%;
+                                         background:var(--primary);
+                                         color:white;display:flex;
+                                         align-items:center;
+                                         justify-content:center;
+                                         font-weight:700;font-size:16px;"
+                                     th:text="${#strings.substring(u.fullName,0,1)}">
+                                    U
+                                </div>
+                                <span class="fw-semibold"
+                                      th:text="${u.fullName}">-</span>
+                            </div>
+                        </td>
+                        <td th:text="${u.email}">-</td>
+                        <td>
+                                <span th:class="${u.role.name == 'ROLE_ADMIN'} ?
+                                    'role-admin' : 'role-farmer'"
+                                      th:text="${u.role.name == 'ROLE_ADMIN'} ?
+                                    'Administrator' : 'Farmer'">-</span>
+                        </td>
+                        <td>
+                                <span th:class="${u.enabled} ?
+                                    'status-active' : 'status-inactive'"
+                                      th:text="${u.enabled} ?
+                                    'Active' : 'Disabled'">-</span>
+                        </td>
+                        <td th:text="${u.createdAt != null} ?
+                                ${#temporals.format(u.createdAt,'dd MMM yyyy')} :
+                                '-'">-</td>
+                        <td>
+                            <!-- Toggle Enable/Disable -->
+                            <form th:action="@{/admin/users/{id}/toggle(id=${u.id})}"
+                                  method="post" class="d-inline">
+                                <button type="submit"
+                                        th:class="${u.enabled} ?
+                                            'btn btn-sm btn-outline-warning me-1' :
+                                            'btn btn-sm btn-outline-success me-1'"
+                                        th:title="${u.enabled} ?
+                                            'Disable User' : 'Enable User'"
+                                        th:onclick="return confirm('Are you sure you want to ' + (${u.enabled} ? 'disable' : 'enable') + ' this user?')">
+                                    <i th:class="${u.enabled} ?
+                                            'fas fa-user-slash' :
+                                            'fas fa-user-check'"></i>
+                                </button>
+                            </form>
+
+                            <!-- Delete User -->
+                            <form th:action="@{/admin/users/{id}/delete(id=${u.id})}"
+                                  method="post" class="d-inline">
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Permanently delete this user and all their data?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

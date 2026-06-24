@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Farm Management System</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        .profile-avatar {
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            box-shadow: 0 4px 15px rgba(76,175,125,0.3);
+        }
+        .avatar-initials-lg {
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 700;
+            border: 4px solid var(--primary);
+            box-shadow: 0 4px 15px rgba(76,175,125,0.3);
+        }
+        .profile-upload-btn {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .profile-upload-btn input[type=file] {
+            position: absolute;
+            left: 0; top: 0;
+            opacity: 0;
+            width: 100%; height: 100%;
+            cursor: pointer;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .info-value {
+            font-size: 14px;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">
+            <i class="fas fa-user-circle me-2 text-success"></i>My Profile
+        </div>
+    </div>
+
+    <div class="page-content">
+
+        <!-- Alerts -->
+        <div th:if="${successMessage}" class="alert-farm-success mb-4">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert-farm-error mb-4">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- Left: Avatar + Info -->
+            <div class="col-md-4">
+                <div class="farm-card p-4 text-center">
+
+                    <!-- Avatar -->
+                    <div class="d-flex justify-content-center mb-3">
+                        <img th:if="${user.profilePicture != 'default-avatar.png'}"
+                             th:src="@{'/uploads/profiles/' + ${user.profilePicture}}"
+                             class="profile-avatar" alt="Profile">
+                        <div th:if="${user.profilePicture == 'default-avatar.png'}"
+                             class="avatar-initials-lg mx-auto"
+                             th:text="${#strings.substring(user.fullName, 0, 1)}">U</div>
+                    </div>
+
+                    <h5 class="fw-bold mb-1" th:text="${user.fullName}">User</h5>
+                    <p class="text-muted mb-1" th:text="${user.email}">email</p>
+                    <span class="badge bg-success"
+                          th:text="${user.role.name == 'ROLE_ADMIN' ? 'Administrator' : 'Farmer'}">
+                        Farmer
+                    </span>
+
+                    <hr>
+
+                    <!-- Info -->
+                    <div class="text-start">
+                        <div class="info-row">
+                            <span class="info-label">
+                                <i class="fas fa-calendar me-1"></i>Member Since
+                            </span>
+                            <span class="info-value"
+                                  th:text="${#temporals.format(user.createdAt, 'dd MMM yyyy')}">
+                                -
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">
+                                <i class="fas fa-shield-alt me-1"></i>Account Status
+                            </span>
+                            <span class="badge bg-success">Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Edit Profile Form -->
+            <div class="col-md-8">
+                <div class="farm-card">
+                    <div class="farm-card-header">
+                        <h5>
+                            <i class="fas fa-edit me-2 text-success"></i>
+                            Edit Profile
+                        </h5>
+                    </div>
+                    <div class="p-4">
+                        <form th:action="@{/profile/update}"
+                              method="post"
+                              enctype="multipart/form-data"
+                              class="farm-form">
+
+                            <!-- Profile Picture Upload -->
+                            <div class="mb-4">
+                                <label class="d-block mb-2">
+                                    Profile Picture
+                                </label>
+                                <div class="d-flex align-items-center gap-3">
+                                    <img th:if="${user.profilePicture != 'default-avatar.png'}"
+                                         th:src="@{'/uploads/profiles/' + ${user.profilePicture}}"
+                                         id="previewImg"
+                                         style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--primary);">
+                                    <div th:if="${user.profilePicture == 'default-avatar.png'}"
+                                         id="previewInitial"
+                                         style="width:60px;height:60px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;"
+                                         th:text="${#strings.substring(user.fullName,0,1)}">U</div>
+                                    <div>
+                                        <div class="profile-upload-btn btn-farm-outline">
+                                            <i class="fas fa-camera me-2"></i>
+                                            Choose Photo
+                                            <input type="file"
+                                                   name="profilePicture"
+                                                   accept="image/*"
+                                                   onchange="previewImage(this)">
+                                        </div>
+                                        <div class="text-muted mt-1"
+                                             style="font-size:12px;">
+                                            JPG, PNG up to 5MB
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label>Full Name *</label>
+                                    <input type="text" name="fullName"
+                                           class="form-control"
+                                           th:value="${user.fullName}"
+                                           required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Email Address</label>
+                                    <input type="email"
+                                           class="form-control"
+                                           th:value="${user.email}"
+                                           disabled>
+                                    <small class="text-muted">
+                                        Email cannot be changed
+                                    </small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Role</label>
+                                    <input type="text"
+                                           class="form-control"
+                                           th:value="${user.role.name == 'ROLE_ADMIN' ? 'Administrator' : 'Farmer'}"
+                                           disabled>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Member Since</label>
+                                    <input type="text"
+                                           class="form-control"
+                                           th:value="${#temporals.format(user.createdAt, 'dd MMM yyyy')}"
+                                           disabled>
+                                </div>
+                                <div class="col-12 mt-2">
+                                    <button type="submit" class="btn-farm">
+                                        <i class="fas fa-save"></i>
+                                        Update Profile
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Hide initials div if exists
+                const initial = document.getElementById('previewInitial');
+                if (initial) initial.style.display = 'none';
+
+                // Show or create preview image
+                let img = document.getElementById('previewImg');
+                if (!img) {
+                    img = document.createElement('img');
+                    img.id = 'previewImg';
+                    img.style = 'width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--primary);';
+                    initial.parentNode.insertBefore(img, initial);
+                }
+                img.src = e.target.result;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+</body>
+</html>

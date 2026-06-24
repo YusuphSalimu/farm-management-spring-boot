@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Harvest - Farm Management System</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">
+            <i class="fas fa-plus me-2 text-primary"></i>Add Harvest Record
+        </div>
+        <div class="topbar-right">
+            <a th:href="@{/harvest}" class="btn-farm-outline">
+                <i class="fas fa-arrow-left"></i> Back to Harvests
+            </a>
+        </div>
+    </div>
+
+    <div class="page-content">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="farm-card">
+                    <div class="farm-card-header">
+                        <h5>
+                            <i class="fas fa-wheat-awn me-2 text-primary"></i>
+                            Harvest Details
+                        </h5>
+                    </div>
+                    <div class="p-4">
+
+                        <!-- No crops warning -->
+                        <div th:if="${#lists.isEmpty(crops)}"
+                             class="alert-farm-error mb-4">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            You have no crops yet.
+                            <a th:href="@{/crops/add}"
+                               class="fw-bold">Add a crop first</a>
+                            before recording a harvest.
+                        </div>
+
+                        <form th:if="${!#lists.isEmpty(crops)}"
+                              th:action="@{/harvest/add}"
+                              method="post" class="farm-form">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label>Select Crop *</label>
+                                    <div class="d-flex align-items-center gap-3 mb-2">
+                                        <img id="selectedCropImage"
+                                             src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=100&h=100&fit=crop"
+                                             style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #d4ead9;display:none;">
+                                    </div>
+                                    <select name="cropId" id="cropSelect"
+                                            class="form-select" required
+                                            onchange="showCropImage()">
+                                        <option value="">Select a crop</option>
+                                        <option th:each="crop : ${crops}"
+                                                th:value="${crop.id}"
+                                                th:data-image="${cropImageMap[crop.cropName]}"
+                                                th:data-harvest-date="${crop.expectedHarvestDate}"
+                                                th:data-planting-date="${crop.plantingDate}"
+                                                th:text="${crop.cropName + ' - ' + crop.fieldLocation}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Harvest Date *</label>
+                                    <input type="date" name="harvestDate"
+                                           id="harvestDate"
+                                           class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Quantity Harvested *</label>
+                                    <input type="number"
+                                           name="quantityHarvested"
+                                           class="form-control"
+                                           placeholder="e.g. 500"
+                                           step="0.01" min="0" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Unit *</label>
+                                    <select name="unit"
+                                            class="form-select" required>
+                                        <option value="">Select Unit</option>
+                                        <option value="kg">Kilograms (kg)</option>
+                                        <option value="tonnes">Tonnes</option>
+                                        <option value="bags">Bags (Magunia)</option>
+                                        <option value="pieces">Pieces</option>
+                                        <option value="litres">Litres</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Quality *</label>
+                                    <select name="quality"
+                                            class="form-select" required>
+                                        <option value="">Select Quality</option>
+                                        <option value="EXCELLENT">
+                                            Excellent
+                                        </option>
+                                        <option value="GOOD">
+                                            Good
+                                        </option>
+                                        <option value="POOR">
+                                            Poor
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label>Notes</label>
+                                    <textarea name="notes"
+                                              class="form-control" rows="3"
+                                              placeholder="Additional notes about this harvest..."></textarea>
+                                </div>
+                                <div class="col-12 d-flex gap-3 mt-2">
+                                    <button type="submit" class="btn-farm">
+                                        <i class="fas fa-save"></i>
+                                        Save Harvest Record
+                                    </button>
+                                    <a th:href="@{/harvest}"
+                                       class="btn-farm-outline">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function showCropImage() {
+        const select = document.getElementById('cropSelect');
+        const selectedOption = select.options[select.selectedIndex];
+
+        // Show crop image
+        const imageUrl = selectedOption.getAttribute('data-image');
+        const imgEl = document.getElementById('selectedCropImage');
+        if (imageUrl) {
+            imgEl.src = imageUrl;
+            imgEl.style.display = 'block';
+        } else {
+            imgEl.style.display = 'none';
+        }
+
+        // Auto-fill harvest date from crop's expected harvest date
+        const harvestDate = selectedOption.getAttribute('data-harvest-date');
+        const harvestInput = document.getElementById('harvestDate');
+        if (harvestDate) {
+            harvestInput.value = harvestDate;
+            // Set min to planting date if available
+            const plantingDate = selectedOption.getAttribute('data-planting-date');
+            if (plantingDate) {
+                harvestInput.min = plantingDate;
+            }
+        } else {
+            harvestInput.value = '';
+            harvestInput.min = '';
+        }
+        // Remove any max restriction
+        harvestInput.removeAttribute('max');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // No max restriction on harvest date
+        const harvestInput = document.getElementById('harvestDate');
+        if (harvestInput) {
+            harvestInput.removeAttribute('max');
+        }
+    });
+</script>
+</body>
+</html>
