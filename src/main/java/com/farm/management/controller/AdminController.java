@@ -31,8 +31,15 @@ public class AdminController {
     // Admin dashboard
     @GetMapping("/dashboard")
     public String adminDashboard(Model model) {
-        model.addAttribute("user", getCurrentUser());
-        model.addAttribute("users", userService.findAllUsers());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentAdmin = getCurrentUser();
+
+        model.addAttribute("user", currentAdmin);
+
+        // CRITICAL SECURITY UPDATE: Hides the currently logged-in Admin from the list
+        model.addAttribute("users", userService.findAllUsersExcept(auth.getName()));
+
+        // Keeps the total statistics accurate across all accounts
         model.addAttribute("totalUsers", userService.findAllUsers().size());
         model.addAttribute("activePage", "admin");
         return "admin/dashboard";

@@ -7,10 +7,10 @@ import com.farm.management.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import com.farm.management.repository.SaleRepository;
 import com.farm.management.repository.ExpenseRepository;
-import java.util.List;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -89,6 +89,13 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    // Get all users except the currently logged in admin
+    public List<User> findAllUsersExcept(String loggedInEmail) {
+        return userRepository.findAll().stream()
+                .filter(user -> !user.getEmail().equalsIgnoreCase(loggedInEmail))
+                .toList();
+    }
+
     // Find user by id
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
@@ -120,7 +127,8 @@ public class UserService {
         return false;
     }
 
-    // Delete account
+    // Delete account permanently across Storage and DB
+    @Transactional
     public void deleteAccount(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
@@ -162,11 +170,15 @@ public class UserService {
         farmRepository.deleteAll(
                 farmRepository.findByUser(user));
 
-        // 8. Delete user
-        userRepository.deleteById(userId);
+        // 8. Delete user row completely from the repository
+        userRepository.delete(user);
+
+        // 9. Force immediate sync to clear down the database state instantly
+        userRepository.flush();
     }
 
     // Toggle user enabled (admin)
+    @Transactional
     public void toggleUserEnabled(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
