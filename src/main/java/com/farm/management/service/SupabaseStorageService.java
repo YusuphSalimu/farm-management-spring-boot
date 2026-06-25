@@ -63,4 +63,23 @@ public class SupabaseStorageService {
         }
         return "jpg";
     }
+
+    public void deleteFile(String fileUrl) throws Exception {
+        // Extract filename from full URL
+        String fileName = fileUrl.substring(
+                fileUrl.lastIndexOf("/") + 1);
+
+        String deleteUrl = supabaseUrl +
+                "/storage/v1/object/" + bucket + "/" + fileName;
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(deleteUrl))
+                .header("Authorization", "Bearer " + supabaseKey)
+                .DELETE()
+                .build();
+
+        client.send(request,
+                HttpResponse.BodyHandlers.ofString());
+    }
 }

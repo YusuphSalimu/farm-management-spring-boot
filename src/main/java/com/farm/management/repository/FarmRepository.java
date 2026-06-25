@@ -10,4 +10,6 @@ import java.util.List;
 public interface FarmRepository extends JpaRepository<Farm, Long> {
     List<Farm> findByUserOrderByCreatedAtDesc(User user);
     Long countByUser(User user);
+
+    Iterable<? extends Farm> findByUser(User user);
 }

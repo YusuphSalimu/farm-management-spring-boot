@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import com.farm.management.repository.SaleRepository;
+import com.farm.management.repository.ExpenseRepository;
+import java.util.List;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -40,6 +43,12 @@ public class UserService {
 
     @Autowired
     private HarvestRecordRepository harvestRecordRepository;
+
+    @Autowired
+    private SaleRepository saleRepository;
+
+    @Autowired
+    private ExpenseRepository expenseRepository;
 
     @Autowired
     private FarmRepository farmRepository;
@@ -113,23 +122,47 @@ public class UserService {
 
     // Delete account
     public void deleteAccount(Long userId) {
-        // Delete related records first to avoid foreign key errors
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
 
-        // Delete harvest records
+        // 1. Delete profile picture from Supabase Storage
+        if (user.getProfilePicture() != null &&
+                user.getProfilePicture().startsWith("http")) {
+            try {
+                storageService.deleteFile(user.getProfilePicture());
+            } catch (Exception e) {
+                System.err.println("Could not delete profile pic: "
+                        + e.getMessage());
+            }
+        }
+
+        // 2. Delete sales first (references crops)
+        List<com.farm.management.entity.Sale> sales =
+                saleRepository.findByUser(user);
+        saleRepository.deleteAll(sales);
+
+        // 3. Delete harvest records (references crops)
         harvestRecordRepository.deleteAll(
                 harvestRecordRepository.findByUser(user));
 
-        // Delete inventory
-        inventoryRepository.deleteAll(
-                inventoryRepository.findByUser(user));
+        // 4. Delete expenses
+        expenseRepository.deleteAll(
+                expenseRepository.findByUser(user));
 
-        // Delete crops
+        // 5. Delete crops
         cropRepository.deleteAll(
                 cropRepository.findByUser(user));
 
-        // Delete user
+        // 6. Delete inventory
+        inventoryRepository.deleteAll(
+                inventoryRepository.findByUser(user));
+
+        // 7. Delete farms
+        farmRepository.deleteAll(
+                farmRepository.findByUser(user));
+
+        // 8. Delete user
         userRepository.deleteById(userId);
     }
 

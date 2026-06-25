@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:authentication="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -210,31 +212,50 @@
                                 ${#temporals.format(u.createdAt,'dd MMM yyyy')} :
                                 '-'">-</td>
                         <td>
-                            <!-- Toggle Enable/Disable -->
-                            <form th:action="@{/admin/users/{id}/toggle(id=${u.id})}"
-                                  method="post" class="d-inline">
-                                <button type="submit"
-                                        th:class="${u.enabled} ?
-                                            'btn btn-sm btn-outline-warning me-1' :
-                                            'btn btn-sm btn-outline-success me-1'"
-                                        th:title="${u.enabled} ?
-                                            'Disable User' : 'Enable User'"
-                                        th:onclick="return confirm('Are you sure you want to ' + (${u.enabled} ? 'disable' : 'enable') + ' this user?')">
-                                    <i th:class="${u.enabled} ?
-                                            'fas fa-user-slash' :
-                                            'fas fa-user-check'"></i>
-                                </button>
-                            </form>
+                            <!-- Hide actions for current admin -->
+                            <div th:if="${u.email != #authentication.name}">
+                                <!-- Toggle Enable/Disable -->
+                                <form th:action="@{/admin/users/{id}/toggle(id=${u.id})}"
+                                      method="post" class="d-inline">
+                                    <button type="submit"
+                                            th:class="${u.enabled} ?
+                    'btn btn-sm btn-outline-warning me-1' :
+                    'btn btn-sm btn-outline-success me-1'"
+                                            th:title="${u.enabled} ?
+                    'Suspend User' : 'Activate User'"
+                                            th:onclick="return confirm('Are you sure you want to '
+                        + (${u.enabled} ? 'suspend' : 'activate')
+                        + ' this user?')">
+                                        <i th:class="${u.enabled} ?
+                    'fas fa-user-slash' :
+                    'fas fa-user-check'"></i>
+                                        <span th:text="${u.enabled} ?
+                    'Suspend' : 'Activate'">-</span>
+                                    </button>
+                                </form>
 
-                            <!-- Delete User -->
-                            <form th:action="@{/admin/users/{id}/delete(id=${u.id})}"
-                                  method="post" class="d-inline">
-                                <button type="submit"
-                                        class="btn btn-sm btn-outline-danger"
-                                        onclick="return confirm('Permanently delete this user and all their data?')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
+                                <!-- Delete User -->
+                                <form th:action="@{/admin/users/{id}/delete(id=${u.id})}"
+                                      method="post" class="d-inline">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm(
+                        'Permanently delete this user and ALL their data?')">
+                                        <i class="fas fa-trash"></i>
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- Show badge for current admin -->
+                            <div th:if="${u.email == #authentication.name}">
+        <span style="background:#e8f5e9;color:#2e7d32;
+                     padding:4px 12px;border-radius:20px;
+                     font-size:12px;font-weight:600;">
+            <i class="fas fa-shield-alt me-1"></i>
+            You (Admin)
+        </span>
+                            </div>
                         </td>
                     </tr>
                     </tbody>
