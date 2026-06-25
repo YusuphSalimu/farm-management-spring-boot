@@ -24,6 +24,9 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private SupabaseStorageService storageService;
+
+    @Autowired
     private RoleRepository roleRepository;
 
     @Autowired
@@ -84,22 +87,14 @@ public class UserService {
 
     // Update profile
     public User updateProfile(User user, String fullName,
-                              MultipartFile profilePicture) throws IOException {
+                              MultipartFile profilePicture) throws Exception {
 
         user.setFullName(fullName);
 
         if (profilePicture != null && !profilePicture.isEmpty()) {
-            // Save to static/uploads/profiles/
-            String uploadDir = System.getProperty("user.dir")
-                    + "/src/main/resources/static/uploads/profiles/";
-            String fileName = UUID.randomUUID().toString()
-                    + "_" + profilePicture.getOriginalFilename()
-                    .replaceAll("[^a-zA-Z0-9._-]", "_");
-            Path uploadPath = Paths.get(uploadDir);
-            Files.createDirectories(uploadPath);
-            Files.write(uploadPath.resolve(fileName),
-                    profilePicture.getBytes());
-            user.setProfilePicture(fileName);
+            String imageUrl = storageService
+                    .uploadProfilePicture(profilePicture, user.getId());
+            user.setProfilePicture(imageUrl);
         }
 
         return userRepository.save(user);

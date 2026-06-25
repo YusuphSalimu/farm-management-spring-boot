@@ -18,12 +18,18 @@
 
     <div class="sidebar-user">
         <div class="user-avatar">
-            <img th:if="${user.profilePicture != 'default-avatar.png'}"
-                 th:src="@{'/uploads/profiles/' + ${user.profilePicture}}"
-                 alt="Profile">
-            <div th:if="${user.profilePicture == 'default-avatar.png'}"
+            <img th:if="${user.profilePicture != null
+            and !user.profilePicture.equals('default-avatar.png')
+            and user.profilePicture.startsWith('http')}"
+                 th:src="${user.profilePicture}"
+                 alt="Profile"
+                 style="width:42px;height:42px;border-radius:50%;
+                object-fit:cover;border:2px solid var(--primary);">
+            <div th:if="${user.profilePicture == null
+            or user.profilePicture.equals('default-avatar.png')
+            or !user.profilePicture.startsWith('http')}"
                  class="avatar-initials"
-                 th:text="${#strings.substring(user.fullName, 0, 1)}">U</div>
+                 th:text="${#strings.substring(user.fullName,0,1)}">U</div>
         </div>
         <div class="user-info">
             <div class="user-name" th:text="${user.fullName}">User</div>

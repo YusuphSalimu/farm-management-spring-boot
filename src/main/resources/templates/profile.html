@@ -91,14 +91,18 @@
                 <div class="farm-card p-4 text-center">
 
                     <!-- Avatar -->
-                    <div class="d-flex justify-content-center mb-3">
-                        <img th:if="${user.profilePicture != 'default-avatar.png'}"
-                             th:src="@{'/uploads/profiles/' + ${user.profilePicture}}"
-                             class="profile-avatar" alt="Profile">
-                        <div th:if="${user.profilePicture == 'default-avatar.png'}"
-                             class="avatar-initials-lg mx-auto"
-                             th:text="${#strings.substring(user.fullName, 0, 1)}">U</div>
-                    </div>
+                    <!-- Left card avatar -->
+                    <img th:if="${user.profilePicture != null
+                        and !user.profilePicture.equals('default-avatar.png')
+                        and user.profilePicture.startsWith('http')}"
+                         th:src="${user.profilePicture}"
+                         class="profile-avatar" alt="Profile">
+
+                    <div th:if="${user.profilePicture == null
+                        or user.profilePicture.equals('default-avatar.png')
+                        or !user.profilePicture.startsWith('http')}"
+                         class="avatar-initials-lg mx-auto"
+                         th:text="${#strings.substring(user.fullName,0,1)}">U</div>
 
                     <h5 class="fw-bold mb-1" th:text="${user.fullName}">User</h5>
                     <p class="text-muted mb-1" th:text="${user.email}">email</p>
@@ -151,13 +155,22 @@
                                     Profile Picture
                                 </label>
                                 <div class="d-flex align-items-center gap-3">
-                                    <img th:if="${user.profilePicture != 'default-avatar.png'}"
-                                         th:src="@{'/uploads/profiles/' + ${user.profilePicture}}"
+                                    <img th:if="${user.profilePicture != null
+                                    and !user.profilePicture.equals('default-avatar.png')
+                                    and user.profilePicture.startsWith('http')}"
+                                         th:src="${user.profilePicture}"
                                          id="previewImg"
-                                         style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--primary);">
-                                    <div th:if="${user.profilePicture == 'default-avatar.png'}"
+                                         style="width:60px;height:60px;border-radius:50%;
+                                         object-fit:cover;border:2px solid var(--primary);">
+
+                                    <div th:if="${user.profilePicture == null
+                                        or user.profilePicture.equals('default-avatar.png')
+                                        or !user.profilePicture.startsWith('http')}"
                                          id="previewInitial"
-                                         style="width:60px;height:60px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;"
+                                         style="width:60px;height:60px;border-radius:50%;
+                                            background:var(--primary);color:white;
+                                            display:flex;align-items:center;
+                                            justify-content:center;font-size:24px;font-weight:700;"
                                          th:text="${#strings.substring(user.fullName,0,1)}">U</div>
                                     <div>
                                         <div class="profile-upload-btn btn-farm-outline">
